@@ -63,14 +63,18 @@ namespace RockPaperScissor
             {
                 //Random rand = new Random();
                 int n = 1;
+                
                 do
                 {
                     StartRound(n); //Instantiates a new Round object.
                     n++; //Increment the round number.
                 } while (players[0].wins < 2 && players[1].wins < 2); //Ends when a player acquires two wins.
 
-                if (players[0].wins == 2) Console.WriteLine($"{players[0].Name} Wins {players[0].wins} - {players[1].wins} With {ties} Ties.");
-                else Console.WriteLine($"{players[1].Name} Wins {players[1].wins} - {players[0].wins} With {ties} Ties.");
+            String tiesWord;
+            if (ties == 1) { tiesWord = "tie"; }
+            else { tiesWord = "ties"; }
+            if (players[0].wins == 2) Console.WriteLine($"{players[0].Name} Wins {players[0].wins} - {players[1].wins} With {ties} Ties.");
+                else Console.WriteLine($"{players[1].Name} Wins {players[1].wins} - {players[0].wins} With {ties} {tiesWord}.");
             }
 
             /* Method to instantiate and simulate a Round.
