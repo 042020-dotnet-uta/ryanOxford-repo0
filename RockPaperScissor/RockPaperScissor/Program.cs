@@ -7,7 +7,13 @@ namespace RockPaperScissor
     {
         static void Main(string[] args)
         {
-            //Declare variables 
+            Game game = new Game();
+            game.Start();
+
+
+
+            /*
+            //Declare variables                           
             //users and scores stored in arrays
             //integer variable for round count and the tie count
             //convert array for rock paper and scissors to convert choice int to a string
@@ -33,7 +39,7 @@ namespace RockPaperScissor
                 choice[0] = GenerateRPS();
                 choice[1] = GenerateRPS();
 
-                //If statement to check if there is a tie
+                //If statement to check if there is a tie    
                 if(choice[0] != choice[1]){
 
                     //If there is no tie, check to see who wins and then write the round result to the console
@@ -87,8 +93,8 @@ namespace RockPaperScissor
         {
             return rand.Next(3);
         }
-
-        
+        */
+        }
     }
 }
 
