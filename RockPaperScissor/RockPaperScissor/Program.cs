@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.VisualBasic.CompilerServices;
 using System;
 
 namespace RockPaperScissor
@@ -7,11 +10,17 @@ namespace RockPaperScissor
     {
         static void Main(string[] args)
         {
-            Game game = new Game();
-            game.Start();
+            var services = new ServiceCollection();
+            ConfigureServices(services);
 
+            using (ServiceProvider serviceProvider = services.BuildServiceProvider())
+            {
+                Game game = serviceProvider.GetService<Game>();
+                game.Start();
 
+            }
 
+            #region old code
             /*
             //Declare variables                           
             //users and scores stored in arrays
@@ -94,6 +103,11 @@ namespace RockPaperScissor
             return rand.Next(3);
         }
         */
+            #endregion
+        }
+        private static void ConfigureServices(ServiceCollection services)
+        {
+            services.AddLogging(configure => configure.AddConsole()).AddTransient<Game>();
         }
     }
 }

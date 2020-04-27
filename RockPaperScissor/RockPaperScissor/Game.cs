@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,6 +15,8 @@ namespace RockPaperScissor
             scissors
         }
 
+
+
         public class Game
         {
 
@@ -22,16 +26,25 @@ namespace RockPaperScissor
             public readonly List<Round> rounds;
 
             public int ties; //Stores number of tie rounds.
+            private readonly ILogger _logger;
 
-            public Game()
-            {
+        public Game(ILogger<Game> logger)
+        {
+            _logger = logger;
+            players = new Player[2];
+            rounds = new List<Round>();
+            ties = 0;
+            PromptPlayerNames(); //Console prompt for player names.
+        }
+            //public Game()
+            //{
 
-                players = new Player[2];
-                rounds = new List<Round>();
-                ties = 0;
-                PromptPlayerNames(); //Console prompt for player names.
+            //    players = new Player[2];
+            //    rounds = new List<Round>();
+            //    ties = 0;
+            //    PromptPlayerNames(); //Console prompt for player names.
 
-            }
+            //}
 
             #endregion
 
@@ -42,8 +55,15 @@ namespace RockPaperScissor
             Writes to console and prompts user input.
             Uses String inputs to instantiate two Player objects.
             */
-            private void PromptPlayerNames()
+            public void PromptPlayerNames()
             {
+                _logger.LogInformation("LogInformation = Hello. My name is Log Information");
+                _logger.LogWarning("LogWarning = Now I'm Loggy McLoggerton");
+                _logger.LogCritical("LogCritical = As of now, I'm Scrog McLog");
+                _logger.LogDebug("Log Debug");
+                _logger.LogError("LogError");
+                _logger.LogTrace("Log Trace = Tracing my way back home");
+
                 //Console prompt for Player 1 name.
                 Console.Write("Player 1 Name: ");
                 players[0] = new Player(Console.ReadLine());
@@ -81,9 +101,9 @@ namespace RockPaperScissor
             Outputs to console the Player RPS choices and the round outcome.
             Stores Round object into rounds field.
             */
-            private void StartRound(int n)
+            public void StartRound(int n)
             {
-                Round newRound = new Round(n);
+            Round newRound = new Round(n);
                 rounds.Add(newRound);
 
                 Console.Write($"Round {newRound.roundCount}: {players[0].Name} chose {newRound.p1Choice}, {players[1].Name} chose {newRound.p2Choice}. - ");
@@ -92,16 +112,19 @@ namespace RockPaperScissor
                 switch (newRound.result)
                 {
                     case -1: //Player 2 wins.
+                    _logger.LogInformation("Player 2 Won");
                         players[1].wins++;
-                        Console.WriteLine($"{players[1].Name} Won");
+                        //Console.WriteLine($"{players[1].Name} Won");
                         break;
                     case 0: //Tied round.
+                    _logger.LogInformation("Tie");
                         ties++;
-                        Console.WriteLine($"It's a Tie");
+                        //Console.WriteLine($"It's a Tie");
                         break;
                     case 1: //Player 1 wins.
+                    _logger.LogInformation("Player 1 Won");
                         players[0].wins++;
-                        Console.WriteLine($"{players[0].Name} Won");
+                        //Console.WriteLine($"{players[0].Name} Won");
                         break;
                 }
 
