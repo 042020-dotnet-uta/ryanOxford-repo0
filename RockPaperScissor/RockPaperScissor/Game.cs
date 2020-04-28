@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace RockPaperScissor
 {
@@ -21,16 +22,19 @@ namespace RockPaperScissor
         {
 
             #region Fields and Constructor
-
+            public int GameId { get; set; }
             public readonly Player[] players;
             public readonly List<Round> rounds;
 
             public int ties; //Stores number of tie rounds.
-            private readonly ILogger _logger;
+
+
+        public ILogger Logger { get; set; }
+
 
         public Game(ILogger<Game> logger)
         {
-            _logger = logger;
+            Logger = logger;
             players = new Player[2];
             rounds = new List<Round>();
             ties = 0;
@@ -57,12 +61,12 @@ namespace RockPaperScissor
             */
             public void PromptPlayerNames()
             {
-                _logger.LogInformation("LogInformation = Hello. My name is Log Information");
-                _logger.LogWarning("LogWarning = Now I'm Loggy McLoggerton");
-                _logger.LogCritical("LogCritical = As of now, I'm Scrog McLog");
-                _logger.LogDebug("Log Debug");
-                _logger.LogError("LogError");
-                _logger.LogTrace("Log Trace = Tracing my way back home");
+                Logger.LogInformation("LogInformation = Hello. My name is Log Information");
+                Logger.LogWarning("LogWarning = Now I'm Loggy McLoggerton");
+                Logger.LogCritical("LogCritical = As of now, I'm Scrog McLog");
+                Logger.LogDebug("Log Debug");
+                Logger.LogError("LogError");
+                Logger.LogTrace("Log Trace = Tracing my way back home");
 
                 //Console prompt for Player 1 name.
                 Console.Write("Player 1 Name: ");
@@ -112,17 +116,17 @@ namespace RockPaperScissor
                 switch (newRound.result)
                 {
                     case -1: //Player 2 wins.
-                    _logger.LogInformation("Player 2 Won");
+                    Logger.LogInformation("Player 2 Won");
                         players[1].wins++;
                         //Console.WriteLine($"{players[1].Name} Won");
                         break;
                     case 0: //Tied round.
-                    _logger.LogInformation("Tie");
+                    Logger.LogInformation("Tie");
                         ties++;
                         //Console.WriteLine($"It's a Tie");
                         break;
                     case 1: //Player 1 wins.
-                    _logger.LogInformation("Player 1 Won");
+                    Logger.LogInformation("Player 1 Won");
                         players[0].wins++;
                         //Console.WriteLine($"{players[0].Name} Won");
                         break;

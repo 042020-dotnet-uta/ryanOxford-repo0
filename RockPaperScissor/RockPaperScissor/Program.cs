@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualBasic.CompilerServices;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace RockPaperScissor
 {

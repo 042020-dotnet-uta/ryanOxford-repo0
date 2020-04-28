@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Runtime;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace RockPaperScissor
 {
 
     public class Round
     {
+        public int RoundId { get; set; }
         public static Random rand = new Random();
         public static String[] convert = { "rock", "paper", "scissor" };
         public readonly int p1Choice;
