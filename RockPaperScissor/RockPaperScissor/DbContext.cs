@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RockPaperScissor
 {
@@ -11,9 +13,11 @@ namespace RockPaperScissor
         public DbSet<Round> Rounds { get; set; }
         public DbSet<Player> Players { get; set; }
 
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite("Data Source=rpsGame.db");
+            options.UseSqlServer("Server=ESTE; Database=RPS; Trusted_connection = true;");
+
         }
     }
 }

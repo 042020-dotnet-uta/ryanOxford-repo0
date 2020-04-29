@@ -14,7 +14,7 @@ WHERE
 
 --Query to report the total salary of all employees in the department named "Marketing"
 SELECT
-	 d.Name
+	 d.Name AS [Department]
 	,SUM([Salary]) AS [Total Salary]
 FROM
 	dbo.EmpDetails e
@@ -42,7 +42,7 @@ GROUP BY
 
 --Query to report the to employee counts of the different departments
 SELECT
-	 d.Name
+	 d.Name as [Department]
 	,COUNT(e.ID) AS [Employee Count]
 FROM
 	dbo.Department d
