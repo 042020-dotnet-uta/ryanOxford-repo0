@@ -17,7 +17,7 @@ namespace RockPaperScissor
         public readonly int roundCount;
         public readonly int result;
 
-
+        public Round() { }
         public Round(int n)
         {
             p1Choice = GenerateRPS();

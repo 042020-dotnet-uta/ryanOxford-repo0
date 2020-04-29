@@ -10,7 +10,8 @@ namespace RockPaperScissor
     public class Player
 
     {
-		public int PlayerId { get; set; }
+		private int _PlayerID;
+		public int PlayerId { get => _PlayerID; set => _PlayerID = value; }
 		public String Name;
 		public int wins;
 		public Player(string str)
@@ -18,6 +19,8 @@ namespace RockPaperScissor
 			this.Name = str;
 			wins = 0;
 		}
+
+		public Player() { }
 		
 
 
