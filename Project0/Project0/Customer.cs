@@ -57,13 +57,14 @@ namespace Project0
 			get { return _State; }
 			set { _State = value; }
 		}
-		private string _Country;
+		private string _Phone;
 
-		public string Country
+		public string Phone
 		{
-			get { return _Country; }
-			set { _Country = value; }
+			get { return _Phone; }
+			set { _Phone = value; }
 		}
+
 		private string _ZipCode;
 
 		public string ZipCode
@@ -71,6 +72,27 @@ namespace Project0
 			get { return _ZipCode; }
 			set { _ZipCode = value; }
 		}
+		private string _Email;
+
+		public string Email
+		{
+			get { return _Email; }
+			set { _Email = value; }
+		}
+
 		public Customer() { }
+
+		public void PrintCustomerInfo()
+		{
+			string[] titles = { "First name", "Last Name", "Address Line 1", "Address Line 2", "City", "State", "Zip Code", "Phone" };
+			string[] data = { FirstName, LastName, AddressLine1, AddressLine2, City, State, ZipCode, Phone };
+			Console.WriteLine("***************************");
+			for(int i = 0; i < titles.Length; i++)
+			{
+				Console.WriteLine("{0,-20} {1,-20}", titles[i],data[i]);
+			}
+			Console.WriteLine("***************************");
+		}
+
 	}
 }

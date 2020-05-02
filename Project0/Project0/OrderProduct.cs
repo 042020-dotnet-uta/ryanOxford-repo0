@@ -67,6 +67,5 @@ namespace Project0
 			Quantity = quant;
 		}
 
-		OrderProduct newOrderProduct = new OrderProduct(thisorder, thisproduct, 5);
 	}
 }
