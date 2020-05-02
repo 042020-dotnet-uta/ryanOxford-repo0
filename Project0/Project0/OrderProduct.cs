@@ -66,5 +66,7 @@ namespace Project0
 			Product = product;
 			Quantity = quant;
 		}
+
+		OrderProduct newOrderProduct = new OrderProduct(thisorder, thisproduct, 5);
 	}
 }

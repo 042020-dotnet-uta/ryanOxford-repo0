@@ -16,6 +16,7 @@ namespace Project0
         public DbSet<Location> Locations { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
         public DbSet<Inventory> Inventory { get; set; }
+        public DbSet<Customer> Customers { get; set; }
         public Store_DbContext() { }
 
         public Store_DbContext(DbContextOptions<Store_DbContext> options)
