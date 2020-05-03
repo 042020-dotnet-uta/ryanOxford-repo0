@@ -23,5 +23,10 @@ namespace Project0
 		}
 
 		public Location() { }
+
+		public override string ToString()
+		{
+			return "*****************\nID: " + ID + "\nName: " + Name + "\n*****************";
+		}
 	}
 }

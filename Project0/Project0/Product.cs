@@ -42,7 +42,7 @@ namespace Project0
 
 		public override string ToString()
 		{
-			return "Product ID: " + ID + "\nName: " + ProductName + "\nProduct Description: " + ProductDescription + "\nProduct Price: " + Price;
+			return "*****************\nProduct ID: " + ID + "\nName: " + ProductName + "\nProduct Description: " + ProductDescription + "\nProduct Price: " + Price + "\n*****************";
 		}
 		public override bool Equals(object obj)
 		{

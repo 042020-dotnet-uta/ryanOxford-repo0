@@ -14,21 +14,8 @@ namespace Project0
         private static ConsoleKey response;
         public Customer newCustomer = new Customer();
         public Product newProduct = new Product();
+        public Inventory newInventory = new Inventory();
         Store_DbContext db = new Store_DbContext();
-        public static string[] stateAbbreviations = {
-            "AL", "AK", "AS", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FM", "FL", "GA",
-            "GU", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MH", "MD", "MA",
-            "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND",
-            "MP", "OH", "OK", "OR", "PW", "PA", "PR", "RI", "SC", "SD", "TN", "TX", "UT",
-            "VT", "VI", "VA", "WA", "WV", "WI", "WY" };
-        public static string namePattern = @"^([a-zA-Z-]{2,30})*$";
-        public static string emailPattern = @"^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$";
-        public static string addressPattern = @"^([a-zA-Z0-9 .-]{0,50})*$";
-        public static string cityPattern = @"^([a-zA-Z -]{2,30})*$";
-        public static string phonePattern = @"^\d{10}$";
-        public static string zipPattern = @"^\d{5}$";
-        public static string productPattern = @"^([a-zA-Z0-9 .,-]{0,300})*$";
-        public static string pricePattern = @"^\d{0,8}(\.\d{2})?$";
 
 
         String temp;
@@ -39,6 +26,7 @@ namespace Project0
         {
             do
             {
+                Console.WriteLine("*****************************************");
                 Console.WriteLine("Welcome to the store! Use the following keys to execute an action.");
 
                 commands = new string[]{"Create new order","Create new customer","Customer search","Look up customer order history","Update inventory","Create new product","Exit Program"};
@@ -81,7 +69,16 @@ namespace Project0
                 else if (response == ConsoleKey.D5)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Feature to be added later.");
+                    newInventory = AddToInventory();
+                    if (newInventory != null)
+                    {
+                        Console.WriteLine($"Inventory for {newInventory.Product.ProductName} at {newInventory.Location.Name} updated to {newInventory.Quantity}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Inventory update cancelled.");
+                        continue;
+                    }
                 }
                 else if (response == ConsoleKey.D6)
                 {
@@ -108,7 +105,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer First Name: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, namePattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
                 Console.WriteLine("Invalid name. Please use only word characters.");
             }
 
@@ -117,7 +114,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Last Name: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, namePattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
                 Console.WriteLine("Invalid name. Please use only word characters.");
             }
             newCustomer.LastName = temp;
@@ -126,7 +123,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Address Line 1: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, addressPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.addressPattern)) break;
                 Console.WriteLine("Invalid Address. Please use alphanumeric characters only.");
             }
             newCustomer.AddressLine1 = temp;
@@ -134,7 +131,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Address Line 2: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, addressPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.addressPattern)) break;
                 Console.WriteLine("Invalid Address. Please use alphanumeric characters only.");
             }
             newCustomer.AddressLine2 = temp;
@@ -143,7 +140,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer City: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, cityPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.cityPattern)) break;
                 Console.WriteLine("Invalid City. Please use alphanumeric characters only.");
             }
             newCustomer.City = temp;
@@ -152,7 +149,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer State (use two character code e.g. NY): ");
                 temp = Console.ReadLine();
-                if (stateAbbreviations.Contains(temp.ToUpper())) break;
+                if (Regexvars.stateAbbreviations.Contains(temp.ToUpper())) break;
                 Console.WriteLine("Invalid State. Please enter correct State Abbreviation.");
 
             }
@@ -162,7 +159,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Zip Code: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, zipPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.zipPattern)) break;
                 Console.WriteLine("Invalid Zip Code. Please enter 5 digits only.");
             }
             newCustomer.ZipCode = temp;
@@ -171,7 +168,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Phone Number: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, phonePattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.phonePattern)) break;
                 Console.WriteLine("Invalid Phone Number. Please enter a 10-digit number with no dashes.");
             }
             newCustomer.Phone = "("+temp.Substring(0,3)+") " + temp.Substring(3,3) + "-"+temp.Substring(6);
@@ -181,7 +178,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer email address: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, emailPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.emailPattern)) break;
                 Console.WriteLine("Invalid Email address. Please try again.");
             }
             newCustomer.Email = temp;
@@ -223,7 +220,7 @@ namespace Project0
             {
                 Console.WriteLine("Product Name: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, productPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.productPattern)) break;
                 Console.WriteLine("Invalid product name. Alphanumeric with . and - allowed.");
             }
             newProduct.ProductName = temp;
@@ -232,7 +229,7 @@ namespace Project0
             {
                 Console.WriteLine("Product Description: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, productPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.productPattern)) break;
                 Console.WriteLine("Invalid product description. Alphanumeric with . and - and , allowed.");
             }
             newProduct.ProductDescription = temp;
@@ -241,7 +238,7 @@ namespace Project0
             {
                 Console.WriteLine("Product Price: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, pricePattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.pricePattern)) break;
                 Console.WriteLine("Invalid price. Must be a decimal number with 2 decimal places at the end.");
             }
             newProduct.Price = Convert.ToDecimal(temp);
@@ -277,8 +274,82 @@ namespace Project0
 
 
         }
+
+        public Inventory AddToInventory()
+        {
+            newInventory = new Inventory();
+            var dbLocations = db.Locations.ToList();
+            Console.WriteLine("List of Locations:\n");
+            foreach(var obj in dbLocations)
+            {
+                Console.WriteLine(obj.ToString());
+            }
+            var dbLocation = new Location();
+            while (true)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter Location ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Please use only numbers.");
+                }
+                dbLocation = db.Locations.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                if (dbLocation != null) break;
+                Console.WriteLine("Location ID not found. Please try again.");
+            }
+
+            var dbentry = db.Products.ToList();
+            Console.WriteLine("List of products:\n");
+            foreach(var obj in dbentry)
+            {
+                Console.WriteLine(obj.ToString());
+            }
+            var dbProduct = new Product();
+            while (true)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter Product ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Please use only numbers.");
+                }
+                dbProduct = db.Products.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                if (dbProduct != null) break;
+                Console.WriteLine("Product ID not found. Please try again.");
+            }
+
+            while (true)
+            {
+                Console.WriteLine("Enter quantity to add: ");
+                temp = Console.ReadLine();
+                if (Regex.IsMatch(temp, Regexvars.quantityPattern)) break;
+                Console.WriteLine("Invalid id. Please use only numbers, and cannot add more than 999 at a time.");
+            }
+            var dbInventory = db.Inventory.FirstOrDefault(x => x.Product == dbProduct && x.Location == dbLocation);
+            if (dbInventory != null)
+            {
+                dbInventory.Quantity += Int32.Parse(temp);
+                newInventory = dbInventory;
+            }
+            else
+            {
+                newInventory.Product = dbProduct;
+                newInventory.Location = dbLocation;
+                newInventory.Quantity = Int32.Parse(temp);
+                db.Add(newInventory);
+            }
+            db.SaveChanges();
+            return newInventory;
+
+
+
+
+
+        }
         public void testMethod() {
-           
+
             var dbentry = db.Customers.Where(x => x.FirstName == "Fred").ToList();
             var linqTest = from cust in db.Customers
                            where cust.FirstName == "Fred"
