@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Project0
 {
-    class Order
+    public class Order : ITableObject
     {
 		private int _ID;
 
@@ -14,13 +15,7 @@ namespace Project0
 			get { return _ID; }
 			set { _ID = value; }
 		}
-		private User _User;
 
-		public User User
-		{
-			get { return _User; }
-			set { _User = value; }
-		}
 		private Location _Location;
 
 		public Location Location
@@ -47,15 +42,27 @@ namespace Project0
 
 
 		public List<OrderProduct> Products { get; set; } = new List<OrderProduct>();
-		public Order() { }
+		public Order() {}
 
-		public Order(User NewUser, Customer NewCustomer, Location NewLocation)
+		public Order(Customer NewCustomer, Location NewLocation)
 		{
-			User = NewUser;
 			Customer = NewCustomer;
 			Location = NewLocation;
-
-
+		}
+		public OrderProduct checkExists(Product newProd)
+		{
+			if (newProd == null ||!(newProd is Product))
+			{
+				return null;
+			}
+			foreach (OrderProduct op in this.Products)
+			{
+				if (op.Product.Equals(newProd))
+				{
+					return op;
+				}
+			}
+			return null;
 		}
 
 		public bool AddToOrder(Product newProd, int quant = 1)
@@ -67,7 +74,7 @@ namespace Project0
 			{
 				if (op.Product.Equals(newProd))
 				{
-					op.Quantity+=quant;
+					op.Quantity += quant;
 					return true;
 				}
 			}
@@ -107,10 +114,39 @@ namespace Project0
 			return false;
 		}
 
-		public void SubmitOrder()
+		public void PrintInfo()
 		{
-			this.OrderCompleteTime = DateTime.Now;
-
+			string tempID;
+			if (ID < 1)
+			{
+				tempID = "";
+			}
+			else
+			{
+				tempID = ID.ToString();
+			}
+			string tempTime;
+			if (OrderCompleteTime != null)
+			{
+				tempTime = "";
+			}
+			else
+			{
+				tempTime = OrderCompleteTime.ToString("f", DateTimeFormatInfo.InvariantInfo);
+			}
+			string[] titles = { "ID", "Customer Name", "Customer ID", "Location", "Location ID", "Order Completed" };
+			string[] data = { tempID, Customer.FirstName + " " + Customer.LastName, Customer.ID.ToString(), Location.Name,Location.ID.ToString(), tempTime};
+			Console.WriteLine("***************************");
+			for (int i = 0; i < titles.Length; i++)
+			{
+				Console.WriteLine("{0,-20} {1,-20}", titles[i], data[i]);
+			}
+			Console.WriteLine("***************************");
+			foreach(var obj in Products)
+			{
+				obj.PrintInfo();
+			}
+			Console.WriteLine("*********END OF ORDER*********");
 		}
 	}
 }

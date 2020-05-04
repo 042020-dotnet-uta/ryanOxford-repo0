@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Project0
 {
-    class Location
+    public class Location : ITableObject
     {
 		private int _ID;
 
@@ -27,6 +27,18 @@ namespace Project0
 		public override string ToString()
 		{
 			return "*****************\nID: " + ID + "\nName: " + Name + "\n*****************";
+		}
+
+		public void PrintInfo()
+		{
+			string[] titles = { "ID","Location" };
+			string[] data = { ID.ToString(),Name };
+			Console.WriteLine("***************************");
+			for (int i = 0; i < titles.Length; i++)
+			{
+				Console.WriteLine("{0,-20} {1,-20}", titles[i], data[i]);
+			}
+			Console.WriteLine("***************************");
 		}
 	}
 }

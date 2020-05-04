@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Project0
 {
-    class Store_DbContext : DbContext
+    public class Store_DbContext : DbContext
     {
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<User> Users { get; set; }

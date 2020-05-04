@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Project0
 {
-    class Customer
+    public class Customer : ITableObject
     {
 		//Property Declarations
 		private int _ID;
@@ -82,10 +83,19 @@ namespace Project0
 
 		public Customer() { }
 
-		public void PrintCustomerInfo()
+		public void PrintInfo()
 		{
-			string[] titles = { "First name", "Last Name", "Address Line 1", "Address Line 2", "City", "State", "Zip Code", "Phone" };
-			string[] data = { FirstName, LastName, AddressLine1, AddressLine2, City, State, ZipCode, Phone };
+			string tempID;
+			if(ID < 1)
+			{
+				tempID = "";
+			}
+			else
+			{
+				tempID = ID.ToString();
+			}
+			string[] titles = { "ID","First name", "Last Name", "Address Line 1", "Address Line 2", "City", "State", "Zip Code", "Phone", "Email" };
+			string[] data = { tempID, FirstName, LastName, AddressLine1, AddressLine2, City, State, ZipCode, Phone, Email };
 			Console.WriteLine("***************************");
 			for(int i = 0; i < titles.Length; i++)
 			{

@@ -2,13 +2,15 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using System;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Project0
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -18,6 +20,7 @@ namespace Project0
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())
             {
                 StoreOperation op = serviceProvider.GetService<StoreOperation>();
+                //op.test();
                 op.start();
             }
 

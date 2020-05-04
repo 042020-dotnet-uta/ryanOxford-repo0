@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Project0
 {
-    class OrderProduct: IEquatable<OrderProduct>
+    public class OrderProduct: IEquatable<OrderProduct>, ITableObject
     {
 		private int _ID;
 
@@ -65,6 +65,18 @@ namespace Project0
 			Order = order;
 			Product = product;
 			Quantity = quant;
+		}
+
+		public void PrintInfo()
+		{
+			string[] titles = {"Order ID","Product ID","Product","Quantity"};
+			string[] data = { Order.ID.ToString(), Product.ID.ToString(),Product.ProductName,Quantity.ToString() };
+			Console.WriteLine("***************************");
+			for (int i = 0; i < titles.Length; i++)
+			{
+				Console.WriteLine("{0,-20} {1,-20}", titles[i], data[i]);
+			}
+			Console.WriteLine("***************************");
 		}
 
 	}

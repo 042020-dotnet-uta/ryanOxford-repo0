@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Project0
 {
 
-    class Inventory
+    public class Inventory : IEquatable<Inventory>, ITableObject
     {
 		private int _ID;
 
@@ -39,10 +39,39 @@ namespace Project0
 			set { _Quantity = value; }
 		}
 
-		public Inventory() { }
-		public bool AddToInventory(Product newProd, int quant)
+		public Inventory() 
 		{
-			return true;
 		}
+		public override bool Equals(object obj)
+		{
+			if (obj == null) return false;
+			if (!(obj is Inventory objAsProduct)) return false;
+			else return Equals(objAsProduct);
+		}
+		public override int GetHashCode()
+		{
+			return ID;
+
+
+		}
+		public bool Equals(Inventory other)
+		{
+			if (other == null) return false;
+			return (this.Location.ID.Equals(other.Location.ID)&&this.Product.ID.Equals(other.Product.ID));
+		}
+
+		public void PrintInfo()
+		{
+			string[] titles = { "Location", "Product ID","Product","Quantity"  };
+			string[] data = { Location.Name, Product.ID.ToString(), Product.ProductName, Quantity.ToString() };
+
+			Console.WriteLine("***************************");
+			for (int i = 0; i < titles.Length; i++)
+			{
+				Console.WriteLine("{0,-20} {1,-20}", titles[i], data[i]);
+			}
+			Console.WriteLine("***************************");
+		}
+
 	}
 }

@@ -9,12 +9,16 @@ using System.Text.RegularExpressions;
 
 namespace Project0
 {
-    class StoreOperation
+    public class StoreOperation
     {
         private static ConsoleKey response;
+        public Order newOrder = new Order();
         public Customer newCustomer = new Customer();
+        public List<Customer> customerList = new List<Customer>();
         public Product newProduct = new Product();
         public Inventory newInventory = new Inventory();
+        public List<Inventory> InventoryList = new List<Inventory>();
+        public Location newLocation = new Location();
         Store_DbContext db = new Store_DbContext();
 
 
@@ -22,6 +26,13 @@ namespace Project0
 
         private string[] commands;
         private string[] commandkeys;
+
+        public void test()
+        {
+            var newQuery = db.Inventory.ToList();
+            Console.WriteLine(newQuery.Count);
+        }
+        #region Start Method
         public void start()
         {
             do
@@ -40,7 +51,62 @@ namespace Project0
                 if(response == ConsoleKey.D1)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Feature to be added later.");
+                    newOrder = CreateOrder();
+                    ConsoleKey newResponse;
+                    while (true)
+                    {
+                        Console.WriteLine("Current inventory at location");
+                        InventoryList = db.Inventory.Where(x => x.Location.ID == newOrder.Location.ID).ToList();
+                        Console.WriteLine(InventoryList.Count);
+                        foreach(Inventory obj in InventoryList)
+                        {
+                            obj.PrintInfo();
+                        }
+                        Console.WriteLine("Add new product to the order?\nY for yes\nN for no");
+                        while (true)
+                        {                         
+                            newResponse = Console.ReadKey(false).Key;
+                            if (newResponse == ConsoleKey.Y)
+                            {
+                                newOrder = AddToOrder(newOrder);
+                                break;
+                            }
+                            else if(newResponse == ConsoleKey.N)
+                            {
+                                break;
+                            }
+                        }
+                        newOrder.PrintInfo();
+                        Console.WriteLine("Do you wish to submit this order?\nY for yes\nN for no");
+                        bool cont;
+                        while (true)
+                        {
+                            newResponse = Console.ReadKey(false).Key;
+                            if (newResponse == ConsoleKey.Y)
+                            {
+                                cont = true;
+                                break;
+                            }
+                            else if(newResponse == ConsoleKey.N)
+                            {
+                                cont = false;
+                                break;
+                            }
+                        }
+                        if (cont)
+                        {
+                            if(newOrder.Products.Count < 1)
+                            {
+                                Console.WriteLine("Order does not have any products added. Add products to submit.");
+                                continue;
+                            }
+                            db.Add(newOrder);
+                            db.SaveChanges();
+                            Console.WriteLine($"Order has been submitted as order {newOrder.ID.ToString()}");
+                            break;
+                        }
+
+                    }
                 }
                 else if(response == ConsoleKey.D2)
                 {
@@ -59,7 +125,19 @@ namespace Project0
                 else if (response == ConsoleKey.D3)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Feature to be added later.");
+                    customerList = CustomerSearch();
+                    if(customerList.Count > 0)
+                    {
+                        foreach(var obj in customerList)
+                        {
+                            obj.PrintInfo();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No customer found matching that name.");
+                        continue;
+                    }
                 }
                 else if (response == ConsoleKey.D4)
                 {
@@ -97,6 +175,8 @@ namespace Project0
 
             } while (response != ConsoleKey.Escape);
         }
+
+        #endregion
         public Customer AddCustomer()
         {
             newCustomer = new Customer();
@@ -123,7 +203,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Address Line 1: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.addressPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.address1Pattern)) break;
                 Console.WriteLine("Invalid Address. Please use alphanumeric characters only.");
             }
             newCustomer.AddressLine1 = temp;
@@ -131,7 +211,7 @@ namespace Project0
             {
                 Console.WriteLine("Customer Address Line 2: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.addressPattern)) break;
+                if (Regex.IsMatch(temp, Regexvars.address2Pattern)) break;
                 Console.WriteLine("Invalid Address. Please use alphanumeric characters only.");
             }
             newCustomer.AddressLine2 = temp;
@@ -183,7 +263,7 @@ namespace Project0
             }
             newCustomer.Email = temp;
 
-            newCustomer.PrintCustomerInfo();
+            newCustomer.PrintInfo();
             do
             {
                 Console.WriteLine("Create new customer with this new information?");
@@ -243,7 +323,7 @@ namespace Project0
             }
             newProduct.Price = Convert.ToDecimal(temp);
 
-            newProduct.PrintProductInfo();
+            newProduct.PrintInfo();
             do
             {
                 Console.WriteLine("Create new product with this new information?");
@@ -348,6 +428,144 @@ namespace Project0
 
 
         }
+        public Order CreateOrder()
+        {
+            newOrder = new Order();
+            var dbLocations = db.Locations.ToList();
+            Console.WriteLine("List of Locations:\n");
+            foreach (var obj in dbLocations)
+            {
+                Console.WriteLine(obj.ToString());
+            }
+            var dbLocation = new Location();
+            while (true)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter Location ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Please use only numbers.");
+                }
+                newLocation = db.Locations.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                if (dbLocation != null) break;
+                Console.WriteLine("Location ID not found. Please try again.");
+            }
+
+            
+            //while (true)
+            //{
+            //    customerList = CustomerSearch();
+            //    if (customerList.Count > 0)
+            //    {
+            //        foreach (var obj in customerList)
+            //        {
+            //            obj.PrintInfo();
+            //        }
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("No customer found matching that name.");
+
+            //    }
+            //}
+            while (true)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter Customer ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Use only numbers.");
+                }
+                newCustomer = db.Customers.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                if (newCustomer != null) break;
+                else
+                {
+                    Console.WriteLine("Customer ID not found. Use the customer search to find a customer by their first and last name. \nReturning to main menu.");
+                    return null;
+                }
+            }
+            return newOrder = new Order(newCustomer, newLocation);
+
+
+
+        }
+        public Order AddToOrder(Order order)
+        {
+            while (true)
+            {
+                var dbentry = db.Products.ToList();
+                Console.WriteLine("List of products:\n");
+                foreach (var obj in dbentry)
+                {
+                    Console.WriteLine(obj.ToString());
+                }
+                while (true)
+                {
+                    Console.WriteLine("Enter Product ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Use only numbers.");
+                }
+                newProduct = db.Products.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                if (newProduct != null) break;
+                else
+                {
+                    Console.WriteLine("Product ID not found. Nothing added.");
+                    return null;
+                }
+            }
+            while(true)
+            {
+                Console.WriteLine("Enter quantity: ");
+                temp = Console.ReadLine();
+                if (Regex.IsMatch(temp, Regexvars.quantityPattern)) break;
+                Console.WriteLine("Invalid id. Use only numbers.");
+            }
+            int newQuantity = Int32.Parse(temp);
+
+            var dbInventory = db.Inventory.FirstOrDefault(x => x.Product == newProduct && x.Location.ID == newLocation.ID);
+            if (dbInventory != null)
+            {
+                if(dbInventory.Quantity>= order.checkExists(newProduct).Quantity + newQuantity)
+                {
+                    order.AddToOrder(newProduct, newQuantity);
+                    Console.WriteLine("Added to Order.");
+                    return order;
+                }
+
+            }
+            Console.WriteLine("Not enough inventory to add to order. Nothing added to order.");
+            return order;
+        }
+
+        public List<Customer> CustomerSearch()
+        {
+            newCustomer = new Customer();
+            while (true)
+            {
+                Console.WriteLine("Customer First Name: ");
+                temp = Console.ReadLine();
+                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
+                Console.WriteLine("Invalid name. Please use only word characters.");
+            }
+
+            newCustomer.FirstName = temp;
+            while (true)
+            {
+                Console.WriteLine("Customer Last Name: ");
+                temp = Console.ReadLine();
+                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
+                Console.WriteLine("Invalid name. Please use only word characters.");
+            }
+            newCustomer.LastName = temp;
+
+            var dbCustomerSearch = db.Customers.Where(x => x.FirstName == newCustomer.FirstName && x.LastName == newCustomer.LastName).ToList();
+            return dbCustomerSearch;
+        }
+
         public void testMethod() {
 
             var dbentry = db.Customers.Where(x => x.FirstName == "Fred").ToList();

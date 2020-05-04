@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Project0
 {
-    class Product : IEquatable<Product>
+    public class Product : IEquatable<Product>, ITableObject
     {
 		private int _ID;
 
@@ -63,7 +63,7 @@ namespace Project0
 			return (this.ID.Equals(other.ID));
 		}
 
-		public void PrintProductInfo()
+		public void PrintInfo()
 		{
 			string[] titles = { "Product", "Description", "Price" };
 			string[] data = { ProductName, ProductDescription, Price.ToString("0.00") };

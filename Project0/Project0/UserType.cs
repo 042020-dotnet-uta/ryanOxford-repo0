@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Project0
 {
-    class UserType
+    public class UserType
     {	
 		private int _ID;
 
