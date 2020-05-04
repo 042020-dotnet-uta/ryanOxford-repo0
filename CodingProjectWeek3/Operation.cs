@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -38,15 +40,19 @@ namespace CodingProjectWeek3
                 if (response == ConsoleKey.D1)
                 {
                     //Is the number even section
+                    //Extra WriteLine command to fix formatting issue with ReadKey value
+                    Console.WriteLine();
                     Console.WriteLine(IsTheNumberEven());
                 }
                 else if (response == ConsoleKey.D2)
                 {
-                    //Multiplication Table section
+                    Console.WriteLine();
+                    Console.WriteLine(MultiplicationTable());
                 }
                 else if (response == ConsoleKey.D3)
                 {
-                    //Alternating Elements section
+                    Console.WriteLine();
+                    Console.WriteLine(Shuffle());
                 }
             //While exit condition being the Escape key being pressed at the main menu
             } while (response != ConsoleKey.Escape);
@@ -56,8 +62,6 @@ namespace CodingProjectWeek3
         {
             Console.WriteLine("Please enter a number");
             temp = Console.ReadLine();
-            //Print an extra line to fix the formatting issue with the ReadLine key value
-            Console.WriteLine();
             //Use the Regex value to check if the input is a number;
             if (Regex.IsMatch(temp, numberPattern))
             {
@@ -88,7 +92,6 @@ namespace CodingProjectWeek3
             {
                 Console.WriteLine("Please enter a number");
                 temp = Console.ReadLine();
-                Console.WriteLine();
                 if (Regex.IsMatch(temp, numberPattern))
                 {
                     x = Int32.Parse(temp);
@@ -99,16 +102,82 @@ namespace CodingProjectWeek3
             }
         }
 
-        public void Shuffle()
+        public string Shuffle()
         {
             string[] array1 = new string[5];
             string[] array2 = new string[5];
+            temp = "";
             Console.WriteLine("You will be asked to make two string arrays with 5 elements each");
-            for(int i = 0; i < 5, i++)
+            for(int i = 0; i < 5; i++)
             {
-                Console.WriteLine($"Please enter Element {i} for first array:");
+                //While loop to run until return or break is issued
+                while (true)
+                {
+                    Console.WriteLine($"Please enter Element {i} for first array:");
+                    temp = Console.ReadLine();
+                    //Check to see if there is anything entered. If not, retry the loop
+                    if (temp.Length > 0)
+                    {
+                        array1[i] = temp;
+                        break;
+                    }
+                    Console.WriteLine("You did not enter anything. Please enter an element.");
+                }
             }
-            
+            //Print the first array
+            Console.WriteLine($"First array is [{arrayToString(array1)}]");
+
+            //Reset the temp variable to an empty string
+            temp = "";
+            for (int i = 0; i < 5; i++)
+            {
+                //While loop to run until return or break is issued
+                while (true)
+                {
+                    Console.WriteLine($"Please enter Element {i} for second array:");
+                    temp = Console.ReadLine();
+                    //Check to see if there is anything entered. If not, retry the loop
+                    if (temp.Length > 0)
+                    {
+                        array2[i] = temp;
+                        break;
+                    }
+                    Console.WriteLine("You did not enter anything. Please enter an element.");
+                }
+            }
+            //Print the second array
+            Console.WriteLine($"Second array is [{arrayToString(array2)}]");
+
+            //declare string to hold the combined array
+            string[] combinedString = new string[10];
+            //declare a jagged array to hold the two arrays to iterate a for loop with
+            string[][] jaggedArray = new string[2][];
+            jaggedArray[0] = array1;
+            jaggedArray[1] = array2;
+            //Counter to hold values of combined array while iterating through the two arrays
+            int count = 0;
+
+            //First loop cycles through 2 arrays in jagged array
+            for (int i = 0; i < 2; i++)
+            {
+                //Second loop cycles through elements in individual arrays
+                for(int j = 0; j < 5; j++)
+                {
+                    combinedString[count] = jaggedArray[i][j];
+                    count++;
+                }
+            }
+            //Return a string with the combined array
+            return $"Comined array: [{arrayToString(combinedString)}]";
+
+
+
+        }
+
+        //Helper method to use linq to print arrays to string wtih a comma delimiter
+        public string arrayToString(string[] arr)
+        {
+            return String.Join(", ", arr);
         }
 
 
