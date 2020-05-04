@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Project0
 {
-    public class Location : ITableObject
+    public class Location : IEquatable<Location>, ITableObject
     {
 		private int _ID;
 
@@ -21,6 +21,25 @@ namespace Project0
 			get { return _Name; }
 			set { _Name = value; }
 		}
+
+		public override int GetHashCode()
+		{
+			return ID;
+
+
+		}
+		public override bool Equals(object obj)
+		{
+			if (obj == null) return false;
+			if (!(obj is Location objAsLocation)) return false;
+			else return Equals(objAsLocation);
+		}
+		public bool Equals(Location other)
+		{
+			if (other == null) return false;
+			return (this.ID.Equals(other.ID));
+		}
+
 
 		public Location() { }
 

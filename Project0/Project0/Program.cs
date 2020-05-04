@@ -22,6 +22,7 @@ namespace Project0
                 StoreOperation op = serviceProvider.GetService<StoreOperation>();
                 //op.test();
                 op.start();
+                //op.testMethod();
             }
 
         }

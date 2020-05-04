@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -11,28 +13,45 @@ namespace Project0
 {
     public class StoreOperation
     {
+        //Declaring variables
         private static ConsoleKey response;
         public Order newOrder = new Order();
         public Customer newCustomer = new Customer();
         public List<Customer> customerList = new List<Customer>();
         public Product newProduct = new Product();
+        public List<Product> productList = new List<Product>();
         public Inventory newInventory = new Inventory();
         public List<Inventory> InventoryList = new List<Inventory>();
         public Location newLocation = new Location();
+        public List<Order> orderList = new List<Order>();
+        public List<OrderProduct> orderProductList = new List<OrderProduct>();
+
+        //db context to be used throughout the class
         Store_DbContext db = new Store_DbContext();
 
 
         String temp;
 
+        //variables for controlling the console interface
         private string[] commands;
         private string[] commandkeys;
 
         public void test()
         {
-            var newQuery = db.Inventory.ToList();
-            Console.WriteLine(newQuery.Count);
+            var newQuery = db.Inventory.Include("Product").Include("Location").ToList();
+
+
+            foreach (var obj in newQuery)
+            {
+                Console.WriteLine(obj.ToString());
+            }
         }
+
+
+
         #region Start Method
+
+        //This method will initiate the store operation
         public void start()
         {
             do
@@ -40,73 +59,46 @@ namespace Project0
                 Console.WriteLine("*****************************************");
                 Console.WriteLine("Welcome to the store! Use the following keys to execute an action.");
 
-                commands = new string[]{"Create new order","Create new customer","Customer search","Look up customer order history","Update inventory","Create new product","Exit Program"};
-                commandkeys = new string[] { "1", "2", "3", "4", "5","6", "ESC"};
+                //Declaring two arrays to display the interface options
+                commands = new string[]{"Create new order","Create new customer","Customer search","Look up customer order history","Update inventory","Create new product","Look up location order history","Exit Program"};
+                commandkeys = new string[] { "1", "2", "3", "4", "5","6","7", "ESC"};
+
+                //Formatting the interface options
                 for (int i = 0; i < commands.Length; i++)
                 {
                     Console.WriteLine("{0,-5} {1,-20}", commandkeys[i], commands[i]);
                 }
                 response = Console.ReadKey(false).Key;
 
+
+                //Code to execute with the first options
                 if(response == ConsoleKey.D1)
                 {
                     Console.WriteLine();
+                    //Create a new order, prompting for a customer and location
                     newOrder = CreateOrder();
-                    ConsoleKey newResponse;
-                    while (true)
+                    //Call loop to add products to the order;
+                    newOrder = AddToOrderLoop(newOrder);
+                    if (newOrder != null)
                     {
-                        Console.WriteLine("Current inventory at location");
-                        InventoryList = db.Inventory.Where(x => x.Location.ID == newOrder.Location.ID).ToList();
-                        Console.WriteLine(InventoryList.Count);
-                        foreach(Inventory obj in InventoryList)
-                        {
-                            obj.PrintInfo();
-                        }
-                        Console.WriteLine("Add new product to the order?\nY for yes\nN for no");
-                        while (true)
-                        {                         
-                            newResponse = Console.ReadKey(false).Key;
-                            if (newResponse == ConsoleKey.Y)
-                            {
-                                newOrder = AddToOrder(newOrder);
-                                break;
-                            }
-                            else if(newResponse == ConsoleKey.N)
-                            {
-                                break;
-                            }
-                        }
-                        newOrder.PrintInfo();
-                        Console.WriteLine("Do you wish to submit this order?\nY for yes\nN for no");
-                        bool cont;
-                        while (true)
-                        {
-                            newResponse = Console.ReadKey(false).Key;
-                            if (newResponse == ConsoleKey.Y)
-                            {
-                                cont = true;
-                                break;
-                            }
-                            else if(newResponse == ConsoleKey.N)
-                            {
-                                cont = false;
-                                break;
-                            }
-                        }
-                        if (cont)
-                        {
-                            if(newOrder.Products.Count < 1)
-                            {
-                                Console.WriteLine("Order does not have any products added. Add products to submit.");
-                                continue;
-                            }
-                            db.Add(newOrder);
-                            db.SaveChanges();
-                            Console.WriteLine($"Order has been submitted as order {newOrder.ID.ToString()}");
-                            break;
-                        }
+                        newOrder.OrderCompleteTime = DateTime.Now;
+                        db.Add(newOrder);
+                        //foreach(OrderProduct obj in newOrder.Products)
+                        //{
+                        //    db.Add(obj);
+                        //}
+                        db.SaveChanges();
+                        Console.WriteLine();
+                        Console.WriteLine($"Order added as order {newOrder.ID}");
 
                     }
+                    else
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine($"Order cancelled.");
+                    }
+                    PressAnyKey();
+                    
                 }
                 else if(response == ConsoleKey.D2)
                 {
@@ -119,8 +111,8 @@ namespace Project0
                     else
                     {
                         Console.WriteLine("Customer creating cancelled.");
-                        continue;
                     }
+                    PressAnyKey();
                 }
                 else if (response == ConsoleKey.D3)
                 {
@@ -136,13 +128,25 @@ namespace Project0
                     else
                     {
                         Console.WriteLine("No customer found matching that name.");
-                        continue;
                     }
+                    PressAnyKey();
                 }
                 else if (response == ConsoleKey.D4)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Feature to be added later.");
+                    orderList = CustomerOrderList();
+                    if(orderList != null)
+                    {
+                        foreach(Order obj in orderList)
+                        {
+                            obj.PrintInfo();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No orders exist for that customer.");
+                    }
+                    PressAnyKey();
                 }
                 else if (response == ConsoleKey.D5)
                 {
@@ -155,8 +159,8 @@ namespace Project0
                     else
                     {
                         Console.WriteLine("Inventory update cancelled.");
-                        continue;
                     }
+                    PressAnyKey();
                 }
                 else if (response == ConsoleKey.D6)
                 {
@@ -164,13 +168,33 @@ namespace Project0
                     newProduct = AddProduct();
                     if (newProduct != null)
                     {
+                        Console.WriteLine();
+                        db.Add(newProduct);
+                        db.SaveChanges();
                         Console.WriteLine($"New Product created as \n{newProduct.ToString()}");
                     }
                     else
                     {
                         Console.WriteLine("Product creation cancelled.");
-                        continue;
                     }
+                    PressAnyKey();
+                }
+                else if (response == ConsoleKey.D7)
+                {
+                    Console.WriteLine();
+                    orderList = LocationOrderList();
+                    if (orderList != null)
+                    {
+                        foreach (Order obj in orderList)
+                        {
+                            obj.PrintInfo();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No orders exist for that location.");
+                    }
+                    PressAnyKey();
                 }
 
             } while (response != ConsoleKey.Escape);
@@ -294,7 +318,7 @@ namespace Project0
         }
         public Product AddProduct()
         {
-            newProduct = new Product();
+            
 
             while (true)
             {
@@ -303,7 +327,16 @@ namespace Project0
                 if (Regex.IsMatch(temp, Regexvars.productPattern)) break;
                 Console.WriteLine("Invalid product name. Alphanumeric with . and - allowed.");
             }
+            newProduct = db.Products.Where(x => x.ProductName == temp).FirstOrDefault();
+            if (newProduct != null)
+            {
+                Console.WriteLine("Product already exists. Please enter a unique product name.");
+                newProduct = AddProduct();
+            }
+
+            newProduct = new Product();
             newProduct.ProductName = temp;
+
 
             while (true)
             {
@@ -322,6 +355,7 @@ namespace Project0
                 Console.WriteLine("Invalid price. Must be a decimal number with 2 decimal places at the end.");
             }
             newProduct.Price = Convert.ToDecimal(temp);
+            
 
             newProduct.PrintInfo();
             do
@@ -334,9 +368,6 @@ namespace Project0
                 response = Console.ReadKey(false).Key;
                 if (response == ConsoleKey.Y)
                 {
-                    Console.WriteLine();
-                    db.Add(newProduct);
-                    db.SaveChanges();
                     return newProduct;
                 }
                 if (response == ConsoleKey.N)
@@ -407,7 +438,7 @@ namespace Project0
                 if (Regex.IsMatch(temp, Regexvars.quantityPattern)) break;
                 Console.WriteLine("Invalid id. Please use only numbers, and cannot add more than 999 at a time.");
             }
-            var dbInventory = db.Inventory.FirstOrDefault(x => x.Product == dbProduct && x.Location == dbLocation);
+            var dbInventory = db.Inventory.Include("Product").Include("Location").FirstOrDefault(x => x.Product == dbProduct && x.Location == dbLocation);
             if (dbInventory != null)
             {
                 dbInventory.Quantity += Int32.Parse(temp);
@@ -452,24 +483,7 @@ namespace Project0
                 Console.WriteLine("Location ID not found. Please try again.");
             }
 
-            
-            //while (true)
-            //{
-            //    customerList = CustomerSearch();
-            //    if (customerList.Count > 0)
-            //    {
-            //        foreach (var obj in customerList)
-            //        {
-            //            obj.PrintInfo();
-            //        }
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("No customer found matching that name.");
-
-            //    }
-            //}
+           
             while (true)
             {
                 while (true)
@@ -492,16 +506,74 @@ namespace Project0
 
 
         }
+        public Order AddToOrderLoop(Order order)
+        {
+            ConsoleKey newResponse;
+
+            do
+            {
+                //Display current inventory for the location selected
+                Console.WriteLine("Current inventory at location");
+                InventoryList = db.Inventory.Include("Product").Include("Location").Where(x => x.Location.ID == order.Location.ID).ToList();
+                Console.WriteLine(InventoryList.Count);
+                foreach (Inventory obj in InventoryList)
+                {
+                    obj.PrintInfo();
+                }
+                Console.WriteLine("Add new product to the order?\nY for yes\nN for no");
+                while (true)
+                {
+                    newResponse = Console.ReadKey(false).Key;
+                    Console.WriteLine();
+                    if (newResponse == ConsoleKey.Y)
+                    {
+                        order = AddToOrder(order);
+                        break;
+                    }
+                    else if (newResponse == ConsoleKey.N)
+                    {
+                        break;
+                    }
+                }
+                order.PrintInfo();
+                Console.WriteLine("Do you wish to submit this order?\nY for yes\nN for no\nEscape to cancel order");
+                while(true)
+                {
+                    newResponse = Console.ReadKey(false).Key;
+                    if (newResponse == ConsoleKey.Y)
+                    {
+                        if (order.Products.Count < 1)
+                        {
+                            Console.WriteLine("Order does not have any products added. Add products to submit.");
+                            break;
+                        }
+
+                        return order;
+                    }
+                    else if (newResponse == ConsoleKey.N)
+                    {
+
+                        break;
+                    }
+                    if(newResponse == ConsoleKey.Escape)
+                    {
+                        return null;
+                    }
+                } 
+            } while (newResponse != ConsoleKey.Escape);
+            return null;
+        }
         public Order AddToOrder(Order order)
         {
+            OrderProduct check = new OrderProduct();
             while (true)
             {
-                var dbentry = db.Products.ToList();
-                Console.WriteLine("List of products:\n");
-                foreach (var obj in dbentry)
-                {
-                    Console.WriteLine(obj.ToString());
-                }
+                //var dbentry = db.Products.ToList();
+                //Console.WriteLine("List of products:\n");
+                //foreach (var obj in dbentry)
+                //{
+                //    Console.WriteLine(obj.ToString());
+                //}
                 while (true)
                 {
                     Console.WriteLine("Enter Product ID: ");
@@ -526,16 +598,20 @@ namespace Project0
             }
             int newQuantity = Int32.Parse(temp);
 
-            var dbInventory = db.Inventory.FirstOrDefault(x => x.Product == newProduct && x.Location.ID == newLocation.ID);
+            var dbInventory = db.Inventory.Include("Product").Include("Location").FirstOrDefault(x => x.Product == newProduct && x.Location == newLocation);
             if (dbInventory != null)
             {
-                if(dbInventory.Quantity>= order.checkExists(newProduct).Quantity + newQuantity)
+                check = order.checkExists(newProduct);
+                if (check != null)
+                {
+                    newQuantity = newQuantity + check.Quantity;
+                }
+                if(dbInventory.Quantity >= newQuantity)
                 {
                     order.AddToOrder(newProduct, newQuantity);
                     Console.WriteLine("Added to Order.");
                     return order;
                 }
-
             }
             Console.WriteLine("Not enough inventory to add to order. Nothing added to order.");
             return order;
@@ -566,15 +642,110 @@ namespace Project0
             return dbCustomerSearch;
         }
 
+        public List<Order> CustomerOrderList()
+        {
+            newOrder = new Order();
+            int tempid;
+            while (true)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter Customer ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Use only numbers.");
+                }
+                tempid = Int32.Parse(temp);
+                newCustomer = db.Customers.FirstOrDefault(x => x.ID == tempid);
+                if (newCustomer != null) break;
+                else
+                {
+                    Console.WriteLine("Customer ID not found. Use the customer search to find a customer by their first and last name. \nReturning to main menu.");
+                    return null;
+                }
+            }
+            var dbOrder = db.Orders.Include("Customer").Include("Location").Where(x => x.Customer.ID == tempid).ToList();
+            if(dbOrder != null)
+            {
+                foreach(Order obj in dbOrder)
+                {
+                    orderProductList = db.OrderProducts.Include("Order").Include("Product").Where(x => x.Order.ID == obj.ID).ToList();
+                    if(orderProductList != null)
+                    {
+                        obj.Products = orderProductList;
+                    }
+                }
+
+                return dbOrder;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<Order> LocationOrderList()
+        {
+            newOrder = new Order();
+            int tempid;
+            while (true)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter Location ID: ");
+                    temp = Console.ReadLine();
+                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    Console.WriteLine("Invalid id. Use only numbers.");
+                }
+                tempid = Int32.Parse(temp);
+                newLocation = db.Locations.FirstOrDefault(x => x.ID == tempid);
+                if (newCustomer != null) break;
+                else
+                {
+                    Console.WriteLine("Location not found. Enter a valid location ID.");
+                    return null;
+                }
+            }
+            var dbOrder = db.Orders.Include("Customer").Include("Location").Where(x => x.Location.ID == tempid).ToList();
+            if (dbOrder != null)
+            {
+                foreach (Order obj in dbOrder)
+                {
+                    orderProductList = db.OrderProducts.Include("Order").Include("Product").Where(x => x.Order.ID == obj.ID).ToList();
+                    if (orderProductList != null)
+                    {
+                        obj.Products = orderProductList;
+                    }
+                }
+
+                return dbOrder;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void PressAnyKey()
+        {
+            ConsoleKey cont;
+            Console.WriteLine("Press any key to continue");
+            cont = Console.ReadKey(false).Key;
+            Console.WriteLine();
+
+
+        }
+
         public void testMethod() {
 
-            var dbentry = db.Customers.Where(x => x.FirstName == "Fred").ToList();
+            var dbentry = db.Inventory.ToList();
             var linqTest = from cust in db.Customers
                            where cust.FirstName == "Fred"
                             select cust;
-            foreach(Customer obj in dbentry)
+
+            foreach(var obj in dbentry)
             {
-                Console.WriteLine("List of things: " + obj.LastName);
+                Console.WriteLine(obj.ToString());
             }
             foreach(Customer obj in linqTest)
             {

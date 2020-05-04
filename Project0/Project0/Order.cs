@@ -51,7 +51,7 @@ namespace Project0
 		}
 		public OrderProduct checkExists(Product newProd)
 		{
-			if (newProd == null ||!(newProd is Product))
+			if (newProd == null || !(newProd is Product))
 			{
 				return null;
 			}
@@ -116,7 +116,13 @@ namespace Project0
 
 		public void PrintInfo()
 		{
+			string start = "START OF ORDER";
+			string end = "END OF ORDER";
+			int formWidth = 45;
+			start = BorderFormats(start, formWidth);
+			end = BorderFormats(end, formWidth);
 			string tempID;
+
 			if (ID < 1)
 			{
 				tempID = "";
@@ -126,27 +132,51 @@ namespace Project0
 				tempID = ID.ToString();
 			}
 			string tempTime;
-			if (OrderCompleteTime != null)
+			if (OrderCompleteTime == null)
 			{
 				tempTime = "";
 			}
 			else
 			{
-				tempTime = OrderCompleteTime.ToString("f", DateTimeFormatInfo.InvariantInfo);
+				tempTime = OrderCompleteTime.ToString("g", DateTimeFormatInfo.InvariantInfo);
 			}
-			string[] titles = { "ID", "Customer Name", "Customer ID", "Location", "Location ID", "Order Completed" };
-			string[] data = { tempID, Customer.FirstName + " " + Customer.LastName, Customer.ID.ToString(), Location.Name,Location.ID.ToString(), tempTime};
-			Console.WriteLine("***************************");
+			Console.WriteLine(start);
+			string[] titles = {"ID", "Customer Name", "Customer ID", "Location", "Location ID", "Order Completed"};
+			string[] data = {tempID, Customer.FirstName + " " + Customer.LastName, Customer.ID.ToString(), Location.Name,Location.ID.ToString(), tempTime};
+			string[] stars = { "*", "*", "*", "*", "*", "*" };
 			for (int i = 0; i < titles.Length; i++)
 			{
-				Console.WriteLine("{0,-20} {1,-20}", titles[i], data[i]);
+				Console.WriteLine("{0,-1} {1,-20} {2,-20} {3,1}", stars[i], titles[i], data[i], stars[i]);
 			}
-			Console.WriteLine("***************************");
+			string starstring = "";
+			for(int i = 0; i < formWidth; i++)
+			{
+				starstring += "*";
+			}
+			Console.WriteLine(starstring);
+			Console.WriteLine("{0,-1} {1,-20} {2,-20} {3,1}", "", "Product Name", "Quantity", "");
+			Console.WriteLine(starstring);
 			foreach(var obj in Products)
 			{
-				obj.PrintInfo();
+				Console.WriteLine("{0,-1} {1,-20} {2,-20} {3,1}", "*", obj.Product.ProductName, obj.Quantity, "*");
 			}
-			Console.WriteLine("*********END OF ORDER*********");
+			Console.WriteLine(end);
+			Console.WriteLine("\n\n\n");
+		}
+		public string BorderFormats(string str, int len)
+		{
+			if (len > str.Length) {
+				int half = (len - str.Length) / 2;
+				for(int i = 0; i < half; i++)
+				{
+					str = "*" + str;
+				}
+				while (str.Length < len)
+				{
+					str = str + "*";
+				}
+			}
+			return str;
 		}
 	}
 }

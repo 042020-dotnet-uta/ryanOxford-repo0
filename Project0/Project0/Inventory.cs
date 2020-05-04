@@ -59,6 +59,28 @@ namespace Project0
 			if (other == null) return false;
 			return (this.Location.ID.Equals(other.Location.ID)&&this.Product.ID.Equals(other.Product.ID));
 		}
+		public override string ToString()
+		{
+			string product;
+			string location;
+			if(Location != null)
+			{
+				location = Location.ToString();
+			}
+			else
+			{
+				location = "Location is null";
+			}
+			if (Product != null)
+			{
+				product = Product.ToString();
+			}
+			else
+			{
+				product = "Product is null";
+			}
+			return "*****************\nID: "+ ID +  "\nLocation: " + location + "\nProduct: " + product + "\n*****************";
+		}
 
 		public void PrintInfo()
 		{
