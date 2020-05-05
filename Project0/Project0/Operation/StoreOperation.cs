@@ -1,29 +1,63 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#region Using Statements
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.RegularExpressions;
+
+#endregion
+
 
 namespace Project0
 {
+    /// <summary>
+    /// The <c>StoreOperation</c> class
+    /// Contains the logic for operating the store
+    /// </summary>
     public class StoreOperation
     {
+        #region Variable declaration
         //Declaring variables
         private static ConsoleKey response;
+        /// <summary>
+        /// Placeholder Order Object
+        /// </summary>
         public Order newOrder = new Order();
+        /// <summary>
+        /// Placeholder Customer Object
+        /// </summary>
         public Customer newCustomer = new Customer();
+        /// <summary>
+        /// Placeholed List of Customer Objects
+        /// </summary>
         public List<Customer> customerList = new List<Customer>();
+        /// <summary>
+        /// Placeholder Product object
+        /// </summary>
         public Product newProduct = new Product();
+        /// <summary>
+        /// Placeholder List of Product objects
+        /// </summary>
         public List<Product> productList = new List<Product>();
+        /// <summary>
+        /// Placeholder Inventory Object
+        /// </summary>
         public Inventory newInventory = new Inventory();
+        /// <summary>
+        /// Placeholder List of Inventory objects
+        /// </summary>
         public List<Inventory> InventoryList = new List<Inventory>();
+        /// <summary>
+        /// Placeholder Location object
+        /// </summary>
         public Location newLocation = new Location();
+        /// <summary>
+        /// Placeholder List of Order objects
+        /// </summary>
         public List<Order> orderList = new List<Order>();
+        /// <summary>
+        /// Placeholder List of OrderProduct objects
+        /// </summary>
         public List<OrderProduct> orderProductList = new List<OrderProduct>();
 
         //db context to be used throughout the class
@@ -35,27 +69,19 @@ namespace Project0
         //variables for controlling the console interface
         private string[] commands;
         private string[] commandkeys;
-
-        public void test()
-        {
-            var newQuery = db.Inventory.Include("Product").Include("Location").ToList();
-
-
-            foreach (var obj in newQuery)
-            {
-                Console.WriteLine(obj.ToString());
-            }
-        }
-
-
-
-        #region Start Method
+        #endregion
+        #region Operation
 
         //This method will initiate the store operation
+        /// <summary>
+        /// Starts the operation
+        /// Contains the main loop which runs through the program
+        /// </summary>
         public void start()
         {
             do
             {
+                Console.Clear();
                 Console.WriteLine("*****************************************");
                 Console.WriteLine("Welcome to the store! Use the following keys to execute an action.");
 
@@ -70,13 +96,15 @@ namespace Project0
                 }
                 response = Console.ReadKey(false).Key;
 
-
-                //Code to execute with the first options
-                if(response == ConsoleKey.D1)
+                #region First Section - Create new order
+                //Code to execute with the first option
+                if (response == ConsoleKey.D1)
                 {
                     Console.WriteLine();
                     //Create a new order, prompting for a customer and location
                     newOrder = CreateOrder();
+                    if (newOrder == null) break;
+
                     //Call loop to add products to the order;
                     newOrder = AddToOrderLoop(newOrder);
                     if (newOrder != null)
@@ -97,25 +125,41 @@ namespace Project0
                         Console.WriteLine();
                         Console.WriteLine($"Order cancelled.");
                     }
+                    //Press any key method pauses the operation until a key is pressed
                     PressAnyKey();
                     
                 }
-                else if(response == ConsoleKey.D2)
+                #endregion
+
+                #region Second Section - Create new customer
+                //Second option section
+                else if (response == ConsoleKey.D2)
                 {
                     Console.WriteLine();
+                    //Calls the AddCustomer method, which returns a Customer object
+                    //The object is saved to the database and the object is returned if successful
+                    //If cancelled, returns a null object, and nothing is saved
                     newCustomer = AddCustomer();
                     if (newCustomer != null)
                     {
+                        Console.WriteLine();
                         Console.WriteLine($"New Customer created for {newCustomer.FirstName} {newCustomer.LastName} as customer ID: {newCustomer.ID}");
                     }
                     else
                     {
+                        Console.WriteLine();
                         Console.WriteLine("Customer creating cancelled.");
                     }
                     PressAnyKey();
                 }
+                #endregion
+
+                #region Third Section - Customer search
                 else if (response == ConsoleKey.D3)
                 {
+                    //Prompts for a first and last name, and returns all customers that match
+                    //Returns customer object and prints the customer info
+                    //If null is returned, the customer was not found
                     Console.WriteLine();
                     customerList = CustomerSearch();
                     if(customerList.Count > 0)
@@ -131,8 +175,15 @@ namespace Project0
                     }
                     PressAnyKey();
                 }
+                #endregion
+
+                #region Fourth Section - Look up customer order history
                 else if (response == ConsoleKey.D4)
                 {
+                    //Prompts for customer ID, then returns all customer orders in a list of orders
+                    //If List is returned, displays the info for all of the customer orders
+                    //If null is returned, the customer has no orders
+                    //If wrong customer ID is entered, returns to main menu
                     Console.WriteLine();
                     orderList = CustomerOrderList();
                     if(orderList != null)
@@ -142,14 +193,16 @@ namespace Project0
                             obj.PrintInfo();
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine("No orders exist for that customer.");
-                    }
                     PressAnyKey();
                 }
+                #endregion
+
+                #region Fifth Section - Update inventory
                 else if (response == ConsoleKey.D5)
                 {
+                    //Prompts for Location and Product IDs, and a quantity, then adds a quantity to the given inventory
+                    //If no product inventory is found, one is created, then the quantity is updated
+
                     Console.WriteLine();
                     newInventory = AddToInventory();
                     if (newInventory != null)
@@ -162,8 +215,13 @@ namespace Project0
                     }
                     PressAnyKey();
                 }
+                #endregion
+
+                #region Sixth Section - Create new product
                 else if (response == ConsoleKey.D6)
                 {
+                    //Prompts for a product name and description, then adds the product to the product list
+                    //Ability to confirm or cancel upon creation
                     Console.WriteLine();
                     newProduct = AddProduct();
                     if (newProduct != null)
@@ -179,8 +237,14 @@ namespace Project0
                     }
                     PressAnyKey();
                 }
+                #endregion
+
+                #region Seventh Section - Look up location order history
                 else if (response == ConsoleKey.D7)
                 {
+                    //Prompts for a location name, then displays all orders for the location
+                    //Returns a list of orders
+                    //If null is returned, no orders exist for the location
                     Console.WriteLine();
                     orderList = LocationOrderList();
                     if (orderList != null)
@@ -190,104 +254,58 @@ namespace Project0
                             obj.PrintInfo();
                         }
                     }
-                    else
-                    {
-                        Console.WriteLine("No orders exist for that location.");
-                    }
                     PressAnyKey();
                 }
+                #endregion
 
             } while (response != ConsoleKey.Escape);
+            
         }
 
         #endregion
+        #region Add Elements
+        /// <summary>
+        /// The method to add customer records
+        /// Runs through prompt to gather and validate customer info
+        /// </summary>
+        /// <returns>
+        /// A <c>Customer</c> object containing the new customer info
+        /// </returns>
         public Customer AddCustomer()
         {
             newCustomer = new Customer();
+            //While true loops used to control the data prompting - Thanks @Will Ruiz for the idea!
+            //Does not break until input is validated
+            //uses Regex patterns to validate the inputs
+            //Pattens contained in Regex pattern class
+
+            #region Customer Input Prompts
+
             
-            while (true)
+
+            try
             {
-                Console.WriteLine("Customer First Name: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
-                Console.WriteLine("Invalid name. Please use only word characters.");
+                newCustomer.FirstName = InputPrompts.FirstNamePrompt();
+                newCustomer.LastName = InputPrompts.LastNamePrompt();
+                newCustomer.AddressLine1 = InputPrompts.Address1Prompt();
+                newCustomer.AddressLine2 = InputPrompts.Address2Prompt();
+                newCustomer.City = InputPrompts.CityPrompt();
+                newCustomer.State = InputPrompts.StatePrompt();
+                newCustomer.ZipCode = InputPrompts.ZipPrompt();
+                newCustomer.Phone = InputPrompts.PhonePrompt();
+                newCustomer.Email = InputPrompts.EmailPrompt();
+            }
+            catch(System.Exception e)
+            {
+                Console.WriteLine($"Error inputting customer information:\n{e}.");
             }
 
-            newCustomer.FirstName = temp;
-            while (true)
-            {
-                Console.WriteLine("Customer Last Name: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
-                Console.WriteLine("Invalid name. Please use only word characters.");
-            }
-            newCustomer.LastName = temp;
-
-            while (true)
-            {
-                Console.WriteLine("Customer Address Line 1: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.address1Pattern)) break;
-                Console.WriteLine("Invalid Address. Please use alphanumeric characters only.");
-            }
-            newCustomer.AddressLine1 = temp;
-            while (true)
-            {
-                Console.WriteLine("Customer Address Line 2: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.address2Pattern)) break;
-                Console.WriteLine("Invalid Address. Please use alphanumeric characters only.");
-            }
-            newCustomer.AddressLine2 = temp;
-
-            while (true)
-            {
-                Console.WriteLine("Customer City: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.cityPattern)) break;
-                Console.WriteLine("Invalid City. Please use alphanumeric characters only.");
-            }
-            newCustomer.City = temp;
-
-            while (true)
-            {
-                Console.WriteLine("Customer State (use two character code e.g. NY): ");
-                temp = Console.ReadLine();
-                if (Regexvars.stateAbbreviations.Contains(temp.ToUpper())) break;
-                Console.WriteLine("Invalid State. Please enter correct State Abbreviation.");
-
-            }
-            newCustomer.State = temp;
-
-            while (true)
-            {
-                Console.WriteLine("Customer Zip Code: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.zipPattern)) break;
-                Console.WriteLine("Invalid Zip Code. Please enter 5 digits only.");
-            }
-            newCustomer.ZipCode = temp;
-
-            while (true)
-            {
-                Console.WriteLine("Customer Phone Number: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.phonePattern)) break;
-                Console.WriteLine("Invalid Phone Number. Please enter a 10-digit number with no dashes.");
-            }
-            newCustomer.Phone = "("+temp.Substring(0,3)+") " + temp.Substring(3,3) + "-"+temp.Substring(6);
-
-
-            while (true)
-            {
-                Console.WriteLine("Customer email address: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.emailPattern)) break;
-                Console.WriteLine("Invalid Email address. Please try again.");
-            }
-            newCustomer.Email = temp;
-
+            #endregion
+            //Print out the information that was input for confirmation
             newCustomer.PrintInfo();
+
+
+            //Do loop to prompt for confirmation. If confirmed, data is stored to the database as a new customer
             do
             {
                 Console.WriteLine("Create new customer with this new information?");
@@ -295,9 +313,11 @@ namespace Project0
                 Console.WriteLine("Press N to reinput information");
                 Console.WriteLine("Press C to cancel");
 
+                //Using this readkey object to manage navigation
                 response = Console.ReadKey(false).Key;
                 if (response == ConsoleKey.Y)
                 {
+                    //If confirmed, add the customer to the database
                     Console.WriteLine();
                     db.Add(newCustomer);
                     db.SaveChanges();
@@ -305,58 +325,72 @@ namespace Project0
                 }
                 if (response == ConsoleKey.N)
                 {
+                    //Recall the method to reinput the customer information
                     Console.WriteLine();
                     return this.AddCustomer();
                 }
                 if (response == ConsoleKey.C)
                 {
+                    //break the loop to cancel the customer creation
                     break;
                 }
 
             } while (response != ConsoleKey.Y && response != ConsoleKey.N && response != ConsoleKey.C);
             return null;
         }
+
+        /// <summary>
+        /// The method to add product records
+        /// Runs through a prompt to gather and validate product info
+        /// </summary>
+        /// <remarks>
+        /// Checks to see if the product name already exists, and prevents addition
+        /// </remarks>
+        /// <returns>
+        /// A <c>Product</c> object containing the new Product info
+        /// </returns>
         public Product AddProduct()
         {
-            
-
-            while (true)
+            string productTemp = "";
+            //while true loop to handle data input
+            //Regex pattern to validate input, repeat loop until correct
+            try
             {
-                Console.WriteLine("Product Name: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.productPattern)) break;
-                Console.WriteLine("Invalid product name. Alphanumeric with . and - allowed.");
+                productTemp = InputPrompts.ProductNamePrompt();
             }
-            newProduct = db.Products.Where(x => x.ProductName == temp).FirstOrDefault();
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error entering product name:\n{e}");
+            }
+            //Query the database to check for another product with the same name
+            //If it exists, re-prompt
+            newProduct = db.Products.Where(x => x.ProductName == productTemp).FirstOrDefault();
             if (newProduct != null)
             {
                 Console.WriteLine("Product already exists. Please enter a unique product name.");
                 newProduct = AddProduct();
             }
 
-            newProduct = new Product();
-            newProduct.ProductName = temp;
-
-
-            while (true)
+            try
             {
-                Console.WriteLine("Product Description: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.productPattern)) break;
-                Console.WriteLine("Invalid product description. Alphanumeric with . and - and , allowed.");
-            }
-            newProduct.ProductDescription = temp;
+                //Call a new instance of the Product class, and assign the ProductName property the newly input value
+                newProduct = new Product();
+                newProduct.ProductName = productTemp;
 
-            while (true)
+                //Prompt for the product description
+
+                newProduct.ProductDescription = InputPrompts.ProductDescriptionPrompt();
+
+
+                //Prompt for the product price
+
+                newProduct.Price = InputPrompts.ProductPricePrompt();
+            }
+            catch (Exception e)
             {
-                Console.WriteLine("Product Price: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.pricePattern)) break;
-                Console.WriteLine("Invalid price. Must be a decimal number with 2 decimal places at the end.");
+                Console.WriteLine($"Error entering product information:\n{e}");
             }
-            newProduct.Price = Convert.ToDecimal(temp);
-            
-
+            //Print the newly input information and confirm the saving
             newProduct.PrintInfo();
             do
             {
@@ -365,18 +399,22 @@ namespace Project0
                 Console.WriteLine("Press N to reinput information");
                 Console.WriteLine("Press C to cancel");
 
+                //Console Key used to control the navigation
                 response = Console.ReadKey(false).Key;
                 if (response == ConsoleKey.Y)
                 {
+                    //Return the new product object
                     return newProduct;
                 }
                 if (response == ConsoleKey.N)
                 {
+                    //Recall the method if you choose to reinput the information
                     Console.WriteLine();
                     return this.AddProduct();
                 }
                 if (response == ConsoleKey.C)
                 {
+                    //End the loop and return null to cancel the creation
                     break;
                 }
 
@@ -385,31 +423,42 @@ namespace Project0
 
 
         }
-
+        #endregion
+        #region Inventory
+        /// <summary>
+        /// The method to increase the inventory of an item
+        /// Prompts for location and product id
+        /// </summary>
+        /// <remarks>
+        /// If there is no inventory item present, one is created
+        /// </remarks>
+        /// <returns>
+        /// An <c>Inventory</c> object containing the new Inventory status
+        /// </returns>
         public Inventory AddToInventory()
         {
+            int idTemp = 0;
+            int quantityTemp = 0;
             newInventory = new Inventory();
             var dbLocations = db.Locations.ToList();
+            //Print out a list of locations to select from
             Console.WriteLine("List of Locations:\n");
             foreach(var obj in dbLocations)
             {
                 Console.WriteLine(obj.ToString());
             }
             var dbLocation = new Location();
+
+            //Loop to check if Location ID is present
             while (true)
             {
-                while (true)
-                {
-                    Console.WriteLine("Enter Location ID: ");
-                    temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
-                    Console.WriteLine("Invalid id. Please use only numbers.");
-                }
-                dbLocation = db.Locations.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                idTemp = InputPrompts.IDPrompt("Location");
+                dbLocation = db.Locations.FirstOrDefault(x => x.ID == idTemp);
                 if (dbLocation != null) break;
                 Console.WriteLine("Location ID not found. Please try again.");
             }
 
+            //List out the products available at the location given
             var dbentry = db.Products.ToList();
             Console.WriteLine("List of products:\n");
             foreach(var obj in dbentry)
@@ -419,36 +468,34 @@ namespace Project0
             var dbProduct = new Product();
             while (true)
             {
-                while (true)
-                {
-                    Console.WriteLine("Enter Product ID: ");
-                    temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
-                    Console.WriteLine("Invalid id. Please use only numbers.");
-                }
+                idTemp = InputPrompts.IDPrompt("Product");
+                //Check to see if the product exists
                 dbProduct = db.Products.FirstOrDefault(x => x.ID == Int32.Parse(temp));
                 if (dbProduct != null) break;
                 Console.WriteLine("Product ID not found. Please try again.");
             }
-
-            while (true)
+            try
             {
-                Console.WriteLine("Enter quantity to add: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.quantityPattern)) break;
-                Console.WriteLine("Invalid id. Please use only numbers, and cannot add more than 999 at a time.");
+                quantityTemp = InputPrompts.QuantityPrompt();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error with quantity prompt:\n{e}");
+            }
+            //Check to see if Product Exists in inventory. 
+            //If it does not, create an object and add it. 
+            //If it does, add the quantity to the existing object
             var dbInventory = db.Inventory.Include("Product").Include("Location").FirstOrDefault(x => x.Product == dbProduct && x.Location == dbLocation);
             if (dbInventory != null)
             {
-                dbInventory.Quantity += Int32.Parse(temp);
+                dbInventory.Quantity += quantityTemp;
                 newInventory = dbInventory;
             }
             else
             {
                 newInventory.Product = dbProduct;
                 newInventory.Location = dbLocation;
-                newInventory.Quantity = Int32.Parse(temp);
+                newInventory.Quantity = quantityTemp;
                 db.Add(newInventory);
             }
             db.SaveChanges();
@@ -459,6 +506,8 @@ namespace Project0
 
 
         }
+        #endregion
+        #region Order control
         public Order CreateOrder()
         {
             newOrder = new Order();
@@ -468,6 +517,7 @@ namespace Project0
             {
                 Console.WriteLine(obj.ToString());
             }
+            
             var dbLocation = new Location();
             while (true)
             {
@@ -475,11 +525,12 @@ namespace Project0
                 {
                     Console.WriteLine("Enter Location ID: ");
                     temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    if (Regex.IsMatch(temp, InputPrompts.idPattern)) break;
                     Console.WriteLine("Invalid id. Please use only numbers.");
                 }
                 newLocation = db.Locations.FirstOrDefault(x => x.ID == Int32.Parse(temp));
-                if (dbLocation != null) break;
+                if (newLocation != null) break;
+
                 Console.WriteLine("Location ID not found. Please try again.");
             }
 
@@ -490,7 +541,7 @@ namespace Project0
                 {
                     Console.WriteLine("Enter Customer ID: ");
                     temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    if (Regex.IsMatch(temp, InputPrompts.idPattern)) break;
                     Console.WriteLine("Invalid id. Use only numbers.");
                 }
                 newCustomer = db.Customers.FirstOrDefault(x => x.ID == Int32.Parse(temp));
@@ -578,7 +629,7 @@ namespace Project0
                 {
                     Console.WriteLine("Enter Product ID: ");
                     temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    if (Regex.IsMatch(temp, InputPrompts.idPattern)) break;
                     Console.WriteLine("Invalid id. Use only numbers.");
                 }
                 newProduct = db.Products.FirstOrDefault(x => x.ID == Int32.Parse(temp));
@@ -593,7 +644,7 @@ namespace Project0
             {
                 Console.WriteLine("Enter quantity: ");
                 temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.quantityPattern)) break;
+                if (Regex.IsMatch(temp, InputPrompts.quantityPattern)) break;
                 Console.WriteLine("Invalid id. Use only numbers.");
             }
             int newQuantity = Int32.Parse(temp);
@@ -616,32 +667,31 @@ namespace Project0
             Console.WriteLine("Not enough inventory to add to order. Nothing added to order.");
             return order;
         }
-
+        #endregion
+        #region Searching and Displaying
+        /// <summary>
+        /// Method to search through all <c>Customer</c> objects
+        /// </summary>
+        /// <returns>
+        /// A list of <c>Customer</c> objects from the database. If not found, returns null
+        /// </returns>
         public List<Customer> CustomerSearch()
         {
             newCustomer = new Customer();
-            while (true)
-            {
-                Console.WriteLine("Customer First Name: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
-                Console.WriteLine("Invalid name. Please use only word characters.");
-            }
 
-            newCustomer.FirstName = temp;
-            while (true)
-            {
-                Console.WriteLine("Customer Last Name: ");
-                temp = Console.ReadLine();
-                if (Regex.IsMatch(temp, Regexvars.namePattern)) break;
-                Console.WriteLine("Invalid name. Please use only word characters.");
-            }
-            newCustomer.LastName = temp;
+
+            newCustomer.FirstName = InputPrompts.FirstNamePrompt();
+            newCustomer.LastName = InputPrompts.LastNamePrompt();
 
             var dbCustomerSearch = db.Customers.Where(x => x.FirstName == newCustomer.FirstName && x.LastName == newCustomer.LastName).ToList();
             return dbCustomerSearch;
         }
-
+        /// <summary>
+        /// Method to search for all orders made for a <c>Customer</c>
+        /// </summary>
+        /// <returns>
+        /// A list of <c>Order</c> objects
+        /// </returns>
         public List<Order> CustomerOrderList()
         {
             newOrder = new Order();
@@ -652,7 +702,7 @@ namespace Project0
                 {
                     Console.WriteLine("Enter Customer ID: ");
                     temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    if (Regex.IsMatch(temp, InputPrompts.idPattern)) break;
                     Console.WriteLine("Invalid id. Use only numbers.");
                 }
                 tempid = Int32.Parse(temp);
@@ -680,10 +730,16 @@ namespace Project0
             }
             else
             {
+                Console.WriteLine("No orders exist for this customer.");
                 return null;
             }
         }
-
+        /// <summary>
+        /// Method to search for all orders made at a <c>Location</c>
+        /// </summary>
+        /// <returns>
+        /// A list of <c>Order</c> objects
+        /// </returns>
         public List<Order> LocationOrderList()
         {
             newOrder = new Order();
@@ -694,12 +750,12 @@ namespace Project0
                 {
                     Console.WriteLine("Enter Location ID: ");
                     temp = Console.ReadLine();
-                    if (Regex.IsMatch(temp, Regexvars.idPattern)) break;
+                    if (Regex.IsMatch(temp, InputPrompts.idPattern)) break;
                     Console.WriteLine("Invalid id. Use only numbers.");
                 }
                 tempid = Int32.Parse(temp);
                 newLocation = db.Locations.FirstOrDefault(x => x.ID == tempid);
-                if (newCustomer != null) break;
+                if (newLocation != null) break;
                 else
                 {
                     Console.WriteLine("Location not found. Enter a valid location ID.");
@@ -725,17 +781,21 @@ namespace Project0
                 return null;
             }
         }
-
+        #endregion
+        #region System Control
+        /// <summary>
+        /// Method to pause operation and clear console
+        /// </summary>
         public void PressAnyKey()
         {
-            ConsoleKey cont;
+            //Idea from Michael Wong's code
+            //Empty prompt to pause operation and clear console
             Console.WriteLine("Press any key to continue");
-            cont = Console.ReadKey(false).Key;
-            Console.WriteLine();
-
-
+            Console.ReadKey();
+            Console.Clear();
         }
-
+        #endregion
+        #region Test Methods
         public void testMethod() {
 
             var dbentry = db.Inventory.ToList();
@@ -753,5 +813,16 @@ namespace Project0
             }
             
         }
+        public void test()
+        {
+            var newQuery = db.Inventory.Include("Product").Include("Location").ToList();
+
+
+            foreach (var obj in newQuery)
+            {
+                Console.WriteLine(obj.ToString());
+            }
+        }
+        #endregion
     }
 }

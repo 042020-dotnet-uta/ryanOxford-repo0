@@ -1,0 +1,781 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Project0</name>
+    </assembly>
+    <members>
+        <member name="T:Project0.Store_DbContext">
+            <summary>
+            Method to create the database context used to read and write to the database
+            </summary>
+        </member>
+        <member name="P:Project0.Store_DbContext.Orders">
+            <summary>
+            Orders table
+            </summary>
+        </member>
+        <member name="P:Project0.Store_DbContext.Products">
+            <summary>
+            Products table
+            </summary>
+        </member>
+        <member name="P:Project0.Store_DbContext.Locations">
+            <summary>
+            Locations table
+            </summary>
+        </member>
+        <member name="P:Project0.Store_DbContext.OrderProducts">
+            <summary>
+            OrderProducts table
+            </summary>
+        </member>
+        <member name="P:Project0.Store_DbContext.Inventory">
+            <summary>
+            Inventory table
+            </summary>
+        </member>
+        <member name="P:Project0.Store_DbContext.Customers">
+            <summary>
+            Customer table
+            </summary>
+        </member>
+        <member name="M:Project0.Store_DbContext.#ctor">
+            <summary>
+            No argument constructor
+            </summary>
+        </member>
+        <member name="M:Project0.Store_DbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Project0.Store_DbContext})">
+            <summary>
+            Constructor for options configuration
+            </summary>
+            <param name="options">options settings</param>
+        </member>
+        <member name="M:Project0.Store_DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <summary>
+            Setting the connection to the local SQLServer Database
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="T:Project0.ITableObject">
+            <summary>
+            An interface for object classes
+            Requires they have a PrintInfo() method to print out information about their objects
+            </summary>
+        </member>
+        <member name="M:Project0.ITableObject.PrintInfo">
+            <summary>
+            Required Method to Print Object Info
+            </summary>
+        </member>
+        <member name="T:Project0.Customer">
+            <summary>
+            A <c>Customer</c> class to contain information about a customer
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.ID">
+            <summary>
+            ID property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.FirstName">
+            <summary>
+            FirstName Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.LastName">
+            <summary>
+            LastName Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.AddressLine1">
+            <summary>
+            Address Line 1 Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.AddressLine2">
+            <summary>
+            Address Line 2 Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.City">
+            <summary>
+            City Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.State">
+            <summary>
+            State Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.Phone">
+            <summary>
+            Phone Number Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.ZipCode">
+            <summary>
+            Zip Code Property
+            </summary>
+        </member>
+        <member name="P:Project0.Customer.Email">
+            <summary>
+            Email property
+            </summary>
+        </member>
+        <member name="M:Project0.Customer.#ctor">
+            <summary>
+            No argument Constructor
+            </summary>
+        </member>
+        <member name="M:Project0.Customer.PrintInfo">
+            <summary>
+            A method to print out info about the contents of this object
+            </summary>
+        </member>
+        <member name="T:Project0.Inventory">
+            <summary>
+            An <c>Inventory</c> class that holds the information of an inventory item
+            </summary>
+        </member>
+        <member name="P:Project0.Inventory.ID">
+            <summary>
+            ID Property
+            </summary>
+        </member>
+        <member name="P:Project0.Inventory.Location">
+            <summary>
+            <c>Location</c> Property
+            </summary>
+        </member>
+        <member name="P:Project0.Inventory.Product">
+            <summary>
+            <c>Product</c> property
+            </summary>
+        </member>
+        <member name="P:Project0.Inventory.Quantity">
+            <summary>
+            Quantity property
+            </summary>
+        </member>
+        <member name="M:Project0.Inventory.#ctor">
+            <summary>
+            No argument constructor
+            </summary>
+        </member>
+        <member name="M:Project0.Inventory.Equals(System.Object)">
+            <summary>
+            Overrides the Equals method. Determines if an object is of the same type
+            </summary>
+            <param name="obj">An object to check against</param>
+            <returns>A boolean that represents if the object matches</returns>
+        </member>
+        <member name="M:Project0.Inventory.GetHashCode">
+            <summary>
+            Overrides the GetHashCode method
+            </summary>
+            <returns>An int that is the inventory ID</returns>
+        </member>
+        <member name="M:Project0.Inventory.Equals(Project0.Inventory)">
+            <summary>
+            Overrides the Equals method
+            </summary>
+            <param name="other">An object to compare to</param>
+            <returns>A boolean if it matches. If the ID matches, it is considered equal.</returns>
+        </member>
+        <member name="M:Project0.Inventory.ToString">
+            <summary>
+            Overriding the ToString method for customer formatting
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.Inventory.PrintInfo">
+            <summary>
+            Prints the information in a customer format
+            </summary>
+        </member>
+        <member name="T:Project0.Location">
+            <summary>
+            A <c>Location</c> class to hold info on store locations
+            </summary>
+        </member>
+        <member name="P:Project0.Location.ID">
+            <summary>
+            ID Property
+            </summary>
+        </member>
+        <member name="P:Project0.Location.Name">
+            <summary>
+            Name Property
+            </summary>
+        </member>
+        <member name="M:Project0.Location.#ctor">
+            <summary>
+            No argument constructor
+            </summary>
+        </member>
+        <member name="M:Project0.Location.GetHashCode">
+            <summary>
+            Overrides the method to return the ID of the object;
+            </summary>
+            <returns>An int representing the ID</returns>
+        </member>
+        <member name="M:Project0.Location.Equals(System.Object)">
+            <summary>
+            Overrides to compare an object to one of this class
+            </summary>
+            <param name="obj">An object to compare</param>
+            <returns>A boolean value representing if the object is of this type</returns>
+        </member>
+        <member name="M:Project0.Location.Equals(Project0.Location)">
+            <summary>
+            Overrides to compare an object to see if it matches
+            </summary>
+            <param name="other">An object to compare</param>
+            <returns>A boolean value representing if the object matches this one. If the ID is the same, it is considered equal</returns>
+        </member>
+        <member name="M:Project0.Location.ToString">
+            <summary>
+            Overrides ToString method
+            </summary>
+            <returns>A string with a custom format</returns>
+        </member>
+        <member name="M:Project0.Location.PrintInfo">
+            <summary>
+            A method to print out info about this object
+            </summary>
+        </member>
+        <member name="T:Project0.Order">
+            <summary>
+            The <c>Order</c> class
+            Used to hold all the information about an order
+            </summary>
+        </member>
+        <member name="P:Project0.Order.ID">
+            <summary>
+            ID Property
+            </summary>
+        </member>
+        <member name="P:Project0.Order.Location">
+            <summary>
+            Location Property
+            </summary>
+        </member>
+        <member name="P:Project0.Order.Customer">
+            <summary>
+            Customer Property
+            </summary>
+        </member>
+        <member name="P:Project0.Order.OrderCompleteTime">
+            <summary>
+            OrderCompleTime Property
+            </summary>
+        </member>
+        <member name="P:Project0.Order.Products">
+            <summary>
+            List of Products contained in the order
+            </summary>
+        </member>
+        <member name="M:Project0.Order.#ctor">
+            <summary>
+            No argument constructor
+            </summary>
+        </member>
+        <member name="M:Project0.Order.#ctor(Project0.Customer,Project0.Location)">
+            <summary>
+            Two argument constructor
+            </summary>
+            <param name="NewCustomer">A <c>Customer</c> Object</param>
+            <param name="NewLocation">A <c>Location</c> Object</param>
+        </member>
+        <member name="M:Project0.Order.checkExists(Project0.Product)">
+            <summary>
+            Checks the order to see if a product exists in it
+            </summary>
+            <param name="newProd">A <c>Product</c> object</param>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.Order.AddToOrder(Project0.Product,System.Int32)">
+            <summary>
+            A method to add a product to the order
+            </summary>
+            <param name="newProd"> A <c>Product</c> object</param>
+            <param name="quant">An int representing the quantity to add</param>
+            <returns>A boolean value to represent success</returns>
+        </member>
+        <member name="M:Project0.Order.DeleteFromOrder(Project0.Product)">
+            <summary>
+            A method to delete a <c>Product</c> from the order
+            </summary>
+            <param name="newProd">A <c>Product</c> object</param>
+            <returns>A boolean value to represent success</returns>
+        </member>
+        <member name="M:Project0.Order.UpdateQuantity(Project0.Product,System.Int32)">
+            <summary>
+            A method to update the quantity of a <c>Product</c> on the order
+            </summary>
+            <param name="newProd">A <c>Product</c> object</param>
+            <param name="newQuant">An int representing the quantity to add</param>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.Order.PrintInfo">
+            <summary>
+            A method to print the info about the <c>Order</c>
+            </summary>
+        </member>
+        <member name="M:Project0.Order.BorderFormats(System.String,System.Int32)">
+            <summary>
+            A formatting helper method to adjust the upper and lower borders of the console print of the order
+            It inserts a name into the center of the border
+            </summary>
+            <param name="str">Name to be imbedded in the border</param>
+            <param name="len">Length of characters of the border</param>
+            <returns></returns>
+        </member>
+        <member name="T:Project0.OrderProduct">
+            <summary>
+            An <c>OrderProduct</c> class to represent products and quantities present on an order
+            </summary>
+        </member>
+        <member name="P:Project0.OrderProduct.ID">
+            <summary>
+            ID Property
+            </summary>
+        </member>
+        <member name="P:Project0.OrderProduct.Order">
+            <summary>
+            Order Property
+            </summary>
+        </member>
+        <member name="P:Project0.OrderProduct.Product">
+            <summary>
+            Product Property
+            </summary>
+        </member>
+        <member name="P:Project0.OrderProduct.Quantity">
+            <summary>
+            Quantity Property
+            </summary>
+        </member>
+        <member name="M:Project0.OrderProduct.#ctor">
+            <summary>
+            No argument constructor
+            </summary>
+        </member>
+        <member name="M:Project0.OrderProduct.#ctor(Project0.Order,Project0.Product,System.Int32)">
+            <summary>
+            Constructor with 3 arguments
+            </summary>
+            <param name="order"><c>Order</c> object that this exists on</param>
+            <param name="product"><c>Product</c> contained</param>
+            <param name="quant">Quantity of the product</param>
+        </member>
+        <member name="M:Project0.OrderProduct.ToString">
+            <summary>
+            Override ToString method
+            </summary>
+            <returns>A string with custom formatting</returns>
+        </member>
+        <member name="M:Project0.OrderProduct.Equals(System.Object)">
+            <summary>
+            Override method
+            Checks to see if the object is of this type
+            </summary>
+            <param name="obj">Object to be compared</param>
+            <returns>Boolean representing if the object is of this type</returns>
+        </member>
+        <member name="M:Project0.OrderProduct.GetHashCode">
+            <summary>
+            Override hash code retrieval
+            </summary>
+            <returns>An int that is the object ID</returns>
+        </member>
+        <member name="M:Project0.OrderProduct.Equals(Project0.OrderProduct)">
+            <summary>
+            Override method
+            Checks to see if object matches this one
+            </summary>
+            <param name="other">Object to be compared</param>
+            <returns>Boolean representing whether this object matches. If the Order ID and Product ID match, it is considered equal</returns>
+        </member>
+        <member name="M:Project0.OrderProduct.PrintInfo">
+            <summary>
+            Method to print out information about the object
+            </summary>
+        </member>
+        <member name="T:Project0.Product">
+            <summary>
+            A <c>Product</c> class to conain information about the products in the store
+            </summary>
+        </member>
+        <member name="P:Project0.Product.ID">
+            <summary>
+            ID property
+            </summary>
+        </member>
+        <member name="P:Project0.Product.ProductName">
+            <summary>
+            Product Name Property
+            </summary>
+        </member>
+        <member name="P:Project0.Product.ProductDescription">
+            <summary>
+            Product Name Property
+            </summary>
+        </member>
+        <member name="P:Project0.Product.Price">
+            <summary>
+            Price Property
+            </summary>
+        </member>
+        <member name="M:Project0.Product.#ctor">
+            <summary>
+            No argument constructor
+            </summary>
+        </member>
+        <member name="M:Project0.Product.ToString">
+            <summary>
+            Overrides the ToString method to give custom formatting
+            </summary>
+            <returns>
+            A string with the <c>Product</c> information
+            </returns>
+        </member>
+        <member name="M:Project0.Product.Equals(System.Object)">
+            <summary>
+            Overrides the Equals Method
+            Calls another overridden equals method and passes an  determines if it is the same type
+            </summary>
+            <param name="obj">An object to check to see if it matches</param>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.Product.GetHashCode">
+            <summary>
+            Overrides this method to return the ID property
+            </summary>
+            <returns>
+            An int that is the ID of the object
+            </returns>
+        </member>
+        <member name="M:Project0.Product.Equals(Project0.Product)">
+            <summary>
+            Overrides the Equals method to perform a check
+            If the ID of this object matches, it is considered equal
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.Product.PrintInfo">
+            <summary>
+            Prints out the Product information with customer formatting
+            </summary>
+        </member>
+        <member name="T:Project0.InputPrompts">
+            <summary>
+            A class that holds Input Prompt methods with that use Regex patterns for  input validation
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.namePattern">
+            <summary>
+            Stores the name pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.emailPattern">
+            <summary>
+            Stores the email pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.address1Pattern">
+            <summary>
+            Stores the address line 1 pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.address2Pattern">
+            <summary>
+            Stores the address line 2 pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.cityPattern">
+            <summary>
+            Stores the city pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.phonePattern">
+            <summary>
+            Stores the phone pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.zipPattern">
+            <summary>
+            Stores the zip code pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.productPattern">
+            <summary>
+            Stores the Product name pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.pricePattern">
+            <summary>
+            Stores the Price pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.locationPattern">
+            <summary>
+            Stores the location pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.idPattern">
+            <summary>
+            Stores the ID pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.quantityPattern">
+            <summary>
+            Stores the quantity pattern
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.stateAbbreviations">
+            <summary>
+            Stores the list of acceptable state abbreviations
+            </summary>
+        </member>
+        <member name="F:Project0.InputPrompts.temp">
+            <summary>
+            Temp string to hold inputs for validation
+            </summary>
+        </member>
+        <member name="M:Project0.InputPrompts.PromptTemplate(System.String,System.String,System.String)">
+            <summary>
+            A method to prompt the user for a value
+            Loops until the input is validated
+            </summary>
+            <param name="prompt">The message to display for the prompt</param>
+            <param name="pattern">The Regex pattern to use for validation</param>
+            <param name="error">The message to display if the input validation does not pass</param>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.InputPrompts.StatePrompt">
+            <summary>
+            Prompt for State value
+            </summary>
+            <returns>
+            A string with the state Abbreviation
+            </returns>
+        </member>
+        <member name="M:Project0.InputPrompts.FirstNamePrompt">
+            <summary>
+            Prompt for First Name
+            </summary>
+            <returns>A string with the First Name</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.LastNamePrompt">
+            <summary>
+            Prompt for Last Name
+            </summary>
+            <returns>A string with the Last Name</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.Address1Prompt">
+            <summary>
+            Prompt for Address Line 1
+            </summary>
+            <returns>A string with the Address Line 1</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.Address2Prompt">
+            <summary>
+            Prompt for Address Line 2
+            </summary>
+            <returns>A string with the Address Line 2</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.CityPrompt">
+            <summary>
+            Propmt for City
+            </summary>
+            <returns>A string with the City</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.ZipPrompt">
+            <summary>
+            Prompt for Zip Code
+            </summary>
+            <returns>A string with the Zip Code</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.PhonePrompt">
+            <summary>
+            Prompt for Phone Number
+            </summary>
+            <returns>A string with the Phone number in (555)555-5555 format</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.EmailPrompt">
+            <summary>
+            Prompt for email
+            </summary>
+            <returns>A string with the email</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.ProductNamePrompt">
+            <summary>
+            Product Name Prompt
+            </summary>
+            <returns>A string with the product name</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.ProductDescriptionPrompt">
+            <summary>
+            Product Description Prompt
+            </summary>
+            <returns>A string with the Product Description</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.ProductPricePrompt">
+            <summary>
+            Propmt for Product Price
+            </summary>
+            <returns>A decimal value with the price of the product</returns>
+        </member>
+        <member name="M:Project0.InputPrompts.IDPrompt(System.String)">
+            <summary>
+            Prompt for an ID
+            Can be used for any ID
+            </summary>
+            <param name="type">A string to display which type the ID is for</param>
+            <returns></returns>
+        </member>
+        <member name="M:Project0.InputPrompts.QuantityPrompt">
+            <summary>
+            Prompt for Quantity
+            </summary>
+            <returns>An int for the quantity to be used</returns>
+        </member>
+        <member name="T:Project0.StoreOperation">
+            <summary>
+            The <c>StoreOperation</c> class
+            Contains the logic for operating the store
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.newOrder">
+            <summary>
+            Placeholder Order Object
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.newCustomer">
+            <summary>
+            Placeholder Customer Object
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.customerList">
+            <summary>
+            Placeholed List of Customer Objects
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.newProduct">
+            <summary>
+            Placeholder Product object
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.productList">
+            <summary>
+            Placeholder List of Product objects
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.newInventory">
+            <summary>
+            Placeholder Inventory Object
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.InventoryList">
+            <summary>
+            Placeholder List of Inventory objects
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.newLocation">
+            <summary>
+            Placeholder Location object
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.orderList">
+            <summary>
+            Placeholder List of Order objects
+            </summary>
+        </member>
+        <member name="F:Project0.StoreOperation.orderProductList">
+            <summary>
+            Placeholder List of OrderProduct objects
+            </summary>
+        </member>
+        <member name="M:Project0.StoreOperation.start">
+            <summary>
+            Starts the operation
+            Contains the main loop which runs through the program
+            </summary>
+        </member>
+        <member name="M:Project0.StoreOperation.AddCustomer">
+            <summary>
+            The method to add customer records
+            Runs through prompt to gather and validate customer info
+            </summary>
+            <returns>
+            A <c>Customer</c> object containing the new customer info
+            </returns>
+        </member>
+        <member name="M:Project0.StoreOperation.AddProduct">
+            <summary>
+            The method to add product records
+            Runs through a prompt to gather and validate product info
+            </summary>
+            <remarks>
+            Checks to see if the product name already exists, and prevents addition
+            </remarks>
+            <returns>
+            A <c>Product</c> object containing the new Product info
+            </returns>
+        </member>
+        <member name="M:Project0.StoreOperation.AddToInventory">
+            <summary>
+            The method to increase the inventory of an item
+            Prompts for location and product id
+            </summary>
+            <remarks>
+            If there is no inventory item present, one is created
+            </remarks>
+            <returns>
+            An <c>Inventory</c> object containing the new Inventory status
+            </returns>
+        </member>
+        <member name="M:Project0.StoreOperation.CustomerSearch">
+            <summary>
+            Method to search through all <c>Customer</c> objects
+            </summary>
+            <returns>
+            A list of <c>Customer</c> objects from the database. If not found, returns null
+            </returns>
+        </member>
+        <member name="M:Project0.StoreOperation.CustomerOrderList">
+            <summary>
+            Method to search for all orders made for a <c>Customer</c>
+            </summary>
+            <returns>
+            A list of <c>Order</c> objects
+            </returns>
+        </member>
+        <member name="M:Project0.StoreOperation.LocationOrderList">
+            <summary>
+            Method to search for all orders made at a <c>Location</c>
+            </summary>
+            <returns>
+            A list of <c>Order</c> objects
+            </returns>
+        </member>
+        <member name="M:Project0.StoreOperation.PressAnyKey">
+            <summary>
+            Method to pause operation and clear console
+            </summary>
+        </member>
+        <member name="T:Project0.Program">
+            <summary>
+            Class to run the program
+            </summary>
+        </member>
+        <member name="M:Project0.Program.ConfigureServices(Microsoft.Extensions.DependencyInjection.ServiceCollection)">
+            <summary>
+            method to add in the logging element
+            </summary>
+            <param name="services"></param>
+        </member>
+    </members>
+</doc>

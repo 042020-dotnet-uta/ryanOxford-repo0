@@ -10,6 +10,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Project0
 {
+    /// <summary>
+    /// Class to run the program
+    /// </summary>
     public class Program
     {
         static void Main(string[] args)
@@ -26,7 +29,10 @@ namespace Project0
             }
 
         }
-
+        /// <summary>
+        /// method to add in the logging element
+        /// </summary>
+        /// <param name="services"></param>
         private static void ConfigureServices(ServiceCollection services)
         {
             services.AddLogging(configure =>
