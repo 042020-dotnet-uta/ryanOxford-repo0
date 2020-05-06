@@ -210,7 +210,7 @@ namespace Project0
 			Console.WriteLine(starstring);
 			foreach(var obj in Products)
 			{
-				total = total + obj.Product.Price;
+				total = total + obj.Product.Price*obj.Quantity;
 				Console.WriteLine("{0,-1} {1,-20} {2,5} {3,14} {4,1}", "*", obj.Product.ProductName, obj.Quantity,obj.Product.Price, "*");
 			}
 			Console.WriteLine(starstring);

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 #endregion
@@ -86,8 +87,8 @@ namespace Project0
                 Console.WriteLine("Welcome to the store! Use the following keys to execute an action.");
 
                 //Declaring two arrays to display the interface options
-                commands = new string[]{"Create new order","Create new customer","Customer search","Look up customer order history","Update inventory","Create new product","Look up location order history","Exit Program"};
-                commandkeys = new string[] { "1", "2", "3", "4", "5","6","7", "ESC"};
+                commands = new string[]{"Create new order","Create new customer","Customer search","Look up customer order history","Update inventory","Create new product","Look up location order history","Check Inventory","Exit Program"};
+                commandkeys = new string[] { "1", "2", "3", "4", "5","6","7","8", "ESC"};
 
                 //Formatting the interface options
                 for (int i = 0; i < commands.Length; i++)
@@ -102,22 +103,35 @@ namespace Project0
                 {
                     Console.WriteLine();
                     //Create a new order, prompting for a customer and location
+                    //Calls the CreateOrder Method, which returns an order object
                     newOrder = CreateOrder();
+
                     if (newOrder == null) break;
 
                     //Call loop to add products to the order;
+                    //Calls AddToOrder method, which returns an order object\
+                    //If the order object is null, the order has been cancelled
                     newOrder = AddToOrderLoop(newOrder);
                     if (newOrder != null)
                     {
                         newOrder.OrderCompleteTime = DateTime.Now;
-                        db.Add(newOrder);
-                        //foreach(OrderProduct obj in newOrder.Products)
-                        //{
-                        //    db.Add(obj);
-                        //}
-                        db.SaveChanges();
-                        Console.WriteLine();
-                        Console.WriteLine($"Order added as order {newOrder.ID}");
+                        try
+                        {
+                            db.Add(newOrder);
+                            foreach (OrderProduct obj in newOrder.Products)
+                            {
+                                newInventory = db.Inventory.Include("Product").Include("Location").FirstOrDefault(x => x.Location.ID == newOrder.Location.ID && x.Product.ID == obj.Product.ID);
+                                newInventory.Quantity -= obj.Quantity;
+                                db.Add(obj);
+                            }
+                            db.SaveChanges();
+                            Console.WriteLine();
+                            Console.WriteLine($"Order added as order {newOrder.ID}");
+                        }
+                        catch(System.Exception e)
+                        {
+                            Console.WriteLine($"Error writing the data to the database:\n{e}");
+                        }
 
                     }
                     else
@@ -255,6 +269,17 @@ namespace Project0
                         }
                     }
                     PressAnyKey();
+                }
+                #endregion
+
+                #region Eighth Section - Check Inventory
+                else if (response == ConsoleKey.D8)
+                {
+                    //Displays locations, then prompts for a location ID
+                    //Returns the inventory at this location
+                    PrintInventory();
+                    PressAnyKey();
+
                 }
                 #endregion
 
@@ -470,7 +495,7 @@ namespace Project0
             {
                 idTemp = InputPrompts.IDPrompt("Product");
                 //Check to see if the product exists
-                dbProduct = db.Products.FirstOrDefault(x => x.ID == Int32.Parse(temp));
+                dbProduct = db.Products.FirstOrDefault(x => x.ID == idTemp);
                 if (dbProduct != null) break;
                 Console.WriteLine("Product ID not found. Please try again.");
             }
@@ -500,14 +525,57 @@ namespace Project0
             }
             db.SaveChanges();
             return newInventory;
+        }
 
-
-
-
-
+        /// <summary>
+        /// This method prompts for a location ID then prints the current inventory at this location
+        /// </summary>
+        public void PrintInventory()
+        {
+            var dbLocations = db.Locations.ToList();
+            Console.WriteLine("List of Locations:\n");
+            foreach (var obj in dbLocations)
+            {
+                Console.WriteLine(obj.ToString());
+            }
+            try
+            {
+                newLocation = db.Locations.FirstOrDefault(x => x.ID == InputPrompts.IDPrompt("Location"));
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error retrieving Location from the database:\n{e}");
+            }
+            if (newLocation != null)
+            {
+                try
+                {
+                    InventoryList = db.Inventory.Include("Product").Include("Location").Where(x => x.Location.ID == newLocation.ID).ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error retrieving inventory list from database:\n{e}");
+                }
+                if (InventoryList.Count>0)
+                {
+                    Console.WriteLine("Current Inventory Items:\n");
+                    foreach(Inventory inv in InventoryList)
+                    {
+                        inv.PrintInfo();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Currently no items have been added to this inventory.");
+                }
+            }
         }
         #endregion
         #region Order control
+        /// <summary>
+        /// Creates a new order object that can be used to submit a new order
+        /// </summary>
+        /// <returns>An <c>Order</c> object</returns>
         public Order CreateOrder()
         {
             newOrder = new Order();
@@ -553,10 +621,13 @@ namespace Project0
                 }
             }
             return newOrder = new Order(newCustomer, newLocation);
-
-
-
         }
+
+        /// <summary>
+        /// Loop to operate adding products to the order
+        /// </summary>
+        /// <param name="order">Passing in an order to add to</param>
+        /// <returns>An order with products added to it</returns>
         public Order AddToOrderLoop(Order order)
         {
             ConsoleKey newResponse;
@@ -566,7 +637,9 @@ namespace Project0
                 //Display current inventory for the location selected
                 Console.WriteLine("Current inventory at location");
                 InventoryList = db.Inventory.Include("Product").Include("Location").Where(x => x.Location.ID == order.Location.ID).ToList();
-                Console.WriteLine(InventoryList.Count);
+                //Console.WriteLine(InventoryList.Count);
+
+                //Print out the inventory for the location
                 foreach (Inventory obj in InventoryList)
                 {
                     obj.PrintInfo();
@@ -586,6 +659,7 @@ namespace Project0
                         break;
                     }
                 }
+                //Prints out the order in it's current state
                 order.PrintInfo();
                 Console.WriteLine("Do you wish to submit this order?\nY for yes\nN for no\nEscape to cancel order");
                 while(true)
@@ -593,6 +667,7 @@ namespace Project0
                     newResponse = Console.ReadKey(false).Key;
                     if (newResponse == ConsoleKey.Y)
                     {
+                        //Checks to see if the order has no products added
                         if (order.Products.Count < 1)
                         {
                             Console.WriteLine("Order does not have any products added. Add products to submit.");
@@ -614,17 +689,16 @@ namespace Project0
             } while (newResponse != ConsoleKey.Escape);
             return null;
         }
+        /// <summary>
+        /// Adds a product to the order
+        /// </summary>
+        /// <param name="order">Order to be added to</param>
+        /// <returns>Order with a product added to it</returns>
         public Order AddToOrder(Order order)
         {
             OrderProduct check = new OrderProduct();
             while (true)
             {
-                //var dbentry = db.Products.ToList();
-                //Console.WriteLine("List of products:\n");
-                //foreach (var obj in dbentry)
-                //{
-                //    Console.WriteLine(obj.ToString());
-                //}
                 while (true)
                 {
                     Console.WriteLine("Enter Product ID: ");
@@ -715,7 +789,7 @@ namespace Project0
                 }
             }
             var dbOrder = db.Orders.Include("Customer").Include("Location").Where(x => x.Customer.ID == tempid).ToList();
-            if(dbOrder != null)
+            if(dbOrder.Count>0)
             {
                 foreach(Order obj in dbOrder)
                 {
@@ -763,7 +837,7 @@ namespace Project0
                 }
             }
             var dbOrder = db.Orders.Include("Customer").Include("Location").Where(x => x.Location.ID == tempid).ToList();
-            if (dbOrder != null)
+            if (dbOrder.Count>0)
             {
                 foreach (Order obj in dbOrder)
                 {
@@ -795,23 +869,260 @@ namespace Project0
             Console.Clear();
         }
         #endregion
-        #region Test Methods
-        public void testMethod() {
+        #region Seeder Methods
 
-            var dbentry = db.Inventory.ToList();
-            var linqTest = from cust in db.Customers
-                           where cust.FirstName == "Fred"
-                            select cust;
+        public void SeedDB()
+        {
+            AddNewLocations();
+            AddNewProducts();
+            AddNewCustomers();
+        }
+        public Location CreateLocation(string name) {
 
-            foreach(var obj in dbentry)
+            Location newloc = new Location();
+            if (Regex.IsMatch(name, InputPrompts.locationPattern))
             {
-                Console.WriteLine(obj.ToString());
+                newloc.Name = name;
+                return newloc;
             }
-            foreach(Customer obj in linqTest)
+            return null;
+        }
+
+        public Product CreateProduct(string name, string description, string price)
+        {
+            Product prod = new Product();
+            if (
+                Regex.IsMatch(name, InputPrompts.productPattern) && 
+                Regex.IsMatch(description, InputPrompts.productPattern) &&
+                Regex.IsMatch(price, InputPrompts.pricePattern))
             {
-                Console.WriteLine("Second List: " + obj.LastName);
+                prod.ProductName = name;
+                prod.ProductDescription = description;
+                prod.Price = Convert.ToDecimal(price);
+                return prod;
             }
-            
+            return null;
+        }
+
+        public Customer CreateCustomer(
+            string fname, string lname, string addr1, string addr2, string city, string state, string zip, string phone, string email)
+        {
+            Customer cust = new Customer();
+            if(
+                Regex.IsMatch(fname, InputPrompts.namePattern) &&
+                Regex.IsMatch(lname, InputPrompts.namePattern) &&
+                Regex.IsMatch(addr1, InputPrompts.address1Pattern) &&
+                Regex.IsMatch(addr2, InputPrompts.address2Pattern) &&
+                Regex.IsMatch(city, InputPrompts.cityPattern) &&
+                InputPrompts.stateAbbreviations.Contains(state.ToUpper()) &&
+                Regex.IsMatch(zip, InputPrompts.zipPattern) &&
+                Regex.IsMatch(phone, InputPrompts.phonePattern) &&
+                Regex.IsMatch(email, InputPrompts.emailPattern))
+            {
+                cust.FirstName = fname;
+                cust.LastName = lname;
+                cust.AddressLine1 = addr1;
+                cust.AddressLine2 = addr2;
+                cust.City = city;
+                cust.State = state.ToUpper();
+                cust.ZipCode = zip;
+                cust.Phone = "(" + phone.Substring(0, 3) + ")" + phone.Substring(3, 3) + "-" + phone.Substring(6);
+                cust.Email = email;
+                return cust;
+            }
+            return null;
+        }
+
+        public void AddNewLocations()
+        {
+            string[] names = { "New York", "Boston", "Chicago", "Washington D.C." };
+            List<Location> locationsList = new List<Location>();
+            foreach(string nm in names)
+            {
+                locationsList.Add(CreateLocation(nm));
+            }
+            foreach(Location loc in locationsList)
+            {
+                try
+                {
+                    if(loc!=null) db.Add(loc);
+                }
+                catch (System.Exception e)
+                {
+                    Console.WriteLine($"Error in adding location to db:\n{e}.");
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine($"Error in saving changes to the db:\n{e}.");
+            }
+        }
+
+
+        public void AddNewProducts()
+        {
+            string[] names =
+            {
+                "Road Cycle",
+                "Mountain Bike",
+                "Beach Cruiser",
+                "Triathalon Cycle"
+            };
+            string[] descriptions =
+            {
+                "A high-performance cycle for long rides",
+                "A robust off-road bike for trail riding",
+                "A simple, heavy bike perfect for casual rides",
+                "A light-weight bike for use in triathalons"
+            };
+
+            string[] prices =
+            {
+                "1499.99",
+                "999.99",
+                "299.99",
+                "799.99"
+            };
+            List<Product> prodlist = new List<Product>();
+            for (int i = 0; i < names.Length; i++)
+            {
+                prodlist.Add(CreateProduct(names[i], descriptions[i], prices[i]));
+            }
+
+            foreach (Product prod in prodlist)
+            {
+                try
+                {
+                    if (prod != null) db.Add(prod);
+                }
+                catch (System.Exception e)
+                {
+                    Console.WriteLine($"Error in adding products to the db:\n{e}");
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine($"Error in adding products to the db:\n{e}");
+            }
+        }
+
+
+        public void AddNewCustomers()
+        {
+            string[] fnames =
+            {
+            "Mike",
+            "Steve",
+            "Sally",
+            "Carly"
+            };
+            string[] lnames =
+            {
+            "Jones",
+            "Smith",
+            "Peters",
+            "Caruthers"
+            };
+
+            string[] addr1s =
+            {
+            "123 Birch Ln.",
+            "7754 Huntington St.",
+            "890 Little Rd.",
+            "400 Main St."
+            };
+
+            string[] addr2s =
+            {
+            "Apt 24",
+            "",
+            "Unit 400",
+            "Number 7"
+            };
+
+            string[] cities =
+            {
+            "New York",
+            "Baltimore",
+            "Aurora",
+            "New Jersey"
+            };
+
+            string[] states =
+            {
+            "NY",
+            "MD",
+            "IL",
+            "NJ"
+            };
+
+            string[] zips =
+            {
+            "76565",
+            "99876",
+            "22343",
+            "44323"
+            };
+
+            string[] phones =
+            {
+            "2223334444",
+            "5556787654",
+            "4335432234",
+            "2432232453"
+            };
+
+            string[] emails =
+            {
+            "mike@jones.com",
+            "steve@smith.com",
+            "sally@peters.com",
+            "carly@caruthers.com"
+            };
+
+            List<Customer> custlist = new List<Customer>();
+            for (int i = 0; i < fnames.Length; i++)
+            {
+                custlist.Add(CreateCustomer(
+                    fnames[i],
+                    lnames[i],
+                    addr1s[i],
+                    addr2s[i],
+                    cities[i],
+                    states[i],
+                    zips[i],
+                    phones[i],
+                    emails[i]));
+            }
+
+            foreach (Customer cust in custlist)
+            {
+                try
+                {
+                    if (cust != null) db.Add(cust);
+                }
+                catch (System.Exception e)
+                {
+                    Console.WriteLine($"Error in adding products to the db:\n{e}");
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine($"Error in adding products to the db:\n{e}");
+            }
+
         }
         public void test()
         {

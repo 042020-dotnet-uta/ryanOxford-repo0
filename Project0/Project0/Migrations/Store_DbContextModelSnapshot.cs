@@ -114,16 +114,11 @@ namespace Project0.Migrations
                     b.Property<DateTime>("OrderCompleteTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
 
                     b.HasIndex("CustomerID");
 
                     b.HasIndex("LocationID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("Orders");
                 });
@@ -174,48 +169,6 @@ namespace Project0.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Project0.User", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserTypeID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Project0.UserType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("UserTypes");
-                });
-
             modelBuilder.Entity("Project0.Inventory", b =>
                 {
                     b.HasOne("Project0.Location", "Location")
@@ -236,10 +189,6 @@ namespace Project0.Migrations
                     b.HasOne("Project0.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationID");
-
-                    b.HasOne("Project0.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID");
                 });
 
             modelBuilder.Entity("Project0.OrderProduct", b =>

@@ -737,6 +737,31 @@
             An <c>Inventory</c> object containing the new Inventory status
             </returns>
         </member>
+        <member name="M:Project0.StoreOperation.PrintInventory">
+            <summary>
+            This method prompts for a location ID then prints the current inventory at this location
+            </summary>
+        </member>
+        <member name="M:Project0.StoreOperation.CreateOrder">
+            <summary>
+            Creates a new order object that can be used to submit a new order
+            </summary>
+            <returns>An <c>Order</c> object</returns>
+        </member>
+        <member name="M:Project0.StoreOperation.AddToOrderLoop(Project0.Order)">
+            <summary>
+            Loop to operate adding products to the order
+            </summary>
+            <param name="order">Passing in an order to add to</param>
+            <returns>An order with products added to it</returns>
+        </member>
+        <member name="M:Project0.StoreOperation.AddToOrder(Project0.Order)">
+            <summary>
+            Adds a product to the order
+            </summary>
+            <param name="order">Order to be added to</param>
+            <returns>Order with a product added to it</returns>
+        </member>
         <member name="M:Project0.StoreOperation.CustomerSearch">
             <summary>
             Method to search through all <c>Customer</c> objects

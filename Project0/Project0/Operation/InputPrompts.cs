@@ -52,7 +52,7 @@ namespace Project0
         /// <summary>
         /// Stores the location pattern
         /// </summary>
-        public static string locationPattern = @"^([a-zA-Z- ]{2,30})$";
+        public static string locationPattern = @"^([a-zA-Z-. ]{2,30})$";
         /// <summary>
         /// Stores the ID pattern
         /// </summary>

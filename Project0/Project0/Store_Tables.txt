@@ -1,0 +1,6 @@
+﻿dbo.Customers
+dbo.Inventory
+dbo.Locations
+dbo.OrderProducts
+dbo.Orders
+dbo.Products

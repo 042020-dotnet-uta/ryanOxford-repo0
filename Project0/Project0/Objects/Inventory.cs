@@ -55,9 +55,7 @@ namespace Project0
         #endregion
 
         #region Constructors
-        public Inventory() 
-		{
-		}
+        public Inventory() {}
         #endregion
 
         #region Methods
