@@ -23,17 +23,17 @@ stages:
     jobs:
       - job: 'build'
         steps:
-          - script: dotnet build 'Project0/Project0/Project0.csproj'
+          - script: dotnet build 'Project0/Project0'
           - script: echo "This is for project $(project)"
 
       - job: 'test'
         dependsOn: 'build'
         steps:
-          - script: dotnet test 
+          - script: dotnet test 'Project0/Project0'
 
       - job: 'publish'
         dependsOn: 'test'
         steps:
-          - script: 'dotnet publish'
+          - script: dotnet publish 'Project0/Project0'
 
 name: '$(date:yyyyMMdd)$(rev:rr)'
