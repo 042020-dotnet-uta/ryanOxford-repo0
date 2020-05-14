@@ -23,13 +23,13 @@ stages:
     jobs:
       - job: 'build'
         steps:
-          - script: dotnet build 'Project0/Project0/Project0.csproj'
+          - script: dotnet build 'Project0/Project0/Project0.sln'
           - script: echo "This is for project $(project)!"
 
       - job: 'test'
         dependsOn: 'build'
         steps:
-          - script: 'dotnet test Project0/Project0_Unit_Test/Project0_unit_test.csproj'
+          - script: dotnet test 'Project0/Project0/Project0.sln'
 
       - job: 'publish'
         dependsOn: 'test'
