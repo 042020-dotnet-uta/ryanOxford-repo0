@@ -29,7 +29,7 @@ stages:
       - job: 'test'
         dependsOn: 'build'
         steps:
-          - script: dotnet test 'Project0/Project0/Project0.sln'
+          - script: dotnet test 
 
       - job: 'publish'
         dependsOn: 'test'
