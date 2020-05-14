@@ -23,9 +23,11 @@ namespace Project0
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())
             {
                 StoreOperation op = serviceProvider.GetService<StoreOperation>();
-                //op.test();
                 op.start();
-                //op.testMethod();
+                
+                
+                
+                //To recreate the database, uncomment this next line
                 //op.SeedDB();
             }
 
