@@ -32,7 +32,7 @@ stages:
           - script: 'dotnet test'
 
       - job: 'publish'
-        dependsOn: 'test'
+        dependsOn: 'test Project0/Project0_Unit_Test/Project0_unit_test.csproj'
         steps:
           - script: 'dotnet publish'
 
