@@ -23,7 +23,7 @@ stages:
     jobs:
       - job: 'build'
         steps:
-          - script: dotnet build 'Project0/Project0'
+          - script: dotnet build 'Project0/Project0/Project0.csproj
           - script: echo "This is for project $(project)"
 
       - job: 'test'
